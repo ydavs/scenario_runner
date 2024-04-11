@@ -4,7 +4,8 @@ import math
 import operator
 from typing import List, Tuple
 
-import carla
+import limulator
+# import carla
 import numpy as np
 from antlr4.CommonTokenStream import CommonTokenStream
 from antlr4.FileStream import FileStream
@@ -172,7 +173,7 @@ class OSC2Helper(object):
         return None
 
     @staticmethod
-    def euler_orientation(rotation: carla.Rotation):
+    def euler_orientation(rotation: limulator.Rotation):
         pitch = rotation.pitch
         yaw = rotation.yaw
         roll = rotation.roll
@@ -189,6 +190,25 @@ class OSC2Helper(object):
             pitch / 2
         ) * math.sin(yaw / 2) * math.sin(roll / 2)
         return x, y, z, w
+
+    # @staticmethod
+    # def euler_orientation(rotation: carla.Rotation):
+    #     pitch = rotation.pitch
+    #     yaw = rotation.yaw
+    #     roll = rotation.roll
+    #     x = math.sin(pitch / 2) * math.sin(yaw / 2) * math.cos(roll / 2) + math.cos(
+    #         pitch / 2
+    #     ) * math.cos(yaw / 2) * math.sin(roll / 2)
+    #     y = math.sin(pitch / 2) * math.cos(yaw / 2) * math.cos(roll / 2) + math.cos(
+    #         pitch / 2
+    #     ) * math.sin(yaw / 2) * math.sin(roll / 2)
+    #     z = math.cos(pitch / 2) * math.sin(yaw / 2) * math.cos(roll / 2) - math.sin(
+    #         pitch / 2
+    #     ) * math.cos(yaw / 2) * math.sin(roll / 2)
+    #     w = math.cos(pitch / 2) * math.cos(yaw / 2) * math.cos(roll / 2) - math.sin(
+    #         pitch / 2
+    #     ) * math.sin(yaw / 2) * math.sin(roll / 2)
+    #     return x, y, z, w
 
     @staticmethod
     def flat_list(list_of_lists):

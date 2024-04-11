@@ -16,7 +16,8 @@ import time
 
 import py_trees
 
-from srunner.autoagents.agent_wrapper import AgentWrapper
+# @todo: Setup sensors later, not now
+# from srunner.autoagents.agent_wrapper import AgentWrapper
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.result_writer import ResultOutputProvider
 from srunner.scenariomanager.timer import GameTime
@@ -52,7 +53,7 @@ class ScenarioManager(object):
         self.other_actors = None
 
         self._debug_mode = debug_mode
-        self._agent = None
+        # self._agent = None
         self._sync_mode = sync_mode
         self._watchdog = None
         self._timeout = timeout
@@ -88,9 +89,9 @@ class ScenarioManager(object):
         if self.scenario is not None:
             self.scenario.terminate()
 
-        if self._agent is not None:
-            self._agent.cleanup()
-            self._agent = None
+        # if self._agent is not None:
+        #     self._agent.cleanup()
+        #     self._agent = None
 
         CarlaDataProvider.cleanup()
 
@@ -99,9 +100,9 @@ class ScenarioManager(object):
         Load a new scenario
         """
         self._reset()
-        self._agent = AgentWrapper(agent) if agent else None
-        if self._agent is not None:
-            self._sync_mode = True
+        # self._agent = AgentWrapper(agent) if agent else None
+        # if self._agent is not None:
+        #     self._sync_mode = True
         self.scenario = scenario
         self.scenario_tree = self.scenario.scenario_tree
         self.ego_vehicles = scenario.ego_vehicles
@@ -110,8 +111,8 @@ class ScenarioManager(object):
         # To print the scenario tree uncomment the next line
         # py_trees.display.render_dot_tree(self.scenario_tree)
 
-        if self._agent is not None:
-            self._agent.setup_sensors(self.ego_vehicles[0], self._debug_mode)
+        # if self._agent is not None:
+        #     self._agent.setup_sensors(self.ego_vehicles[0], self._debug_mode)
 
     def run_scenario(self):
         """
@@ -128,10 +129,10 @@ class ScenarioManager(object):
         while self._running:
             timestamp = None
             world = CarlaDataProvider.get_world()
+            # @comment: I don't know what it does for now. I do but it's
+            # @comment: not clear how'll I implement this with my interface
             if world:
-                snapshot = world.get_snapshot()
-                if snapshot:
-                    timestamp = snapshot.timestamp
+                 timestamp = world.get_timestamp()
             if timestamp:
                 self._tick_scenario(timestamp)
 
@@ -165,11 +166,11 @@ class ScenarioManager(object):
             GameTime.on_carla_tick(timestamp)
             CarlaDataProvider.on_carla_tick()
 
-            if self._agent is not None:
-                ego_action = self._agent()  # pylint: disable=not-callable
+            # if self._agent is not None:
+            #     ego_action = self._agent()  # pylint: disable=not-callable
 
-            if self._agent is not None:
-                self.ego_vehicles[0].apply_control(ego_action)
+            # if self._agent is not None:
+            #     self.ego_vehicles[0].apply_control(ego_action)
 
             # Tick scenario
             self.scenario_tree.tick_once()

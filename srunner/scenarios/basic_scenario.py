@@ -14,7 +14,7 @@ from __future__ import print_function
 import operator
 import py_trees
 
-import carla
+# import carla
 
 from srunner.scenariomanager.scenarioatomics.atomic_trigger_conditions import (WaitForBlackboardVariable,
                                                                                InTimeToArrivalToLocation)
@@ -47,7 +47,8 @@ class BasicScenario(object):
         self.terminate_on_failure = terminate_on_failure
         self.criteria_enable = criteria_enable
 
-        self.route_mode = bool(config.route)
+        # self.route_mode = bool(config.route)
+        self.route_mode = False
         self.behavior_tree = None
         self.criteria_tree = None
 
@@ -63,12 +64,13 @@ class BasicScenario(object):
 
         self._initialize_actors(config)
 
-        if CarlaDataProvider.is_runtime_init_mode():
-            world.wait_for_tick()
-        elif CarlaDataProvider.is_sync_mode():
-            world.tick()
-        else:
-            world.wait_for_tick()
+        # @comment: ticking happens here
+        # if CarlaDataProvider.is_runtime_init_mode():
+        #     world.wait_for_tick()
+        # elif CarlaDataProvider.is_sync_mode():
+        #     world.tick()
+        # else:
+        #     world.wait_for_tick()
 
         # Main scenario tree
         self.scenario_tree = py_trees.composites.Parallel(name, policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
@@ -143,21 +145,24 @@ class BasicScenario(object):
         """
 
         # Set the appropriate weather conditions
-        world.set_weather(self.config.weather)
+        # @comment: add weather and change
+        # world.set_weather(self.config.weather)
 
         # Set the appropriate road friction
-        if self.config.friction is not None:
-            friction_bp = world.get_blueprint_library().find('static.trigger.friction')
-            extent = carla.Location(1000000.0, 1000000.0, 1000000.0)
-            friction_bp.set_attribute('friction', str(self.config.friction))
-            friction_bp.set_attribute('extent_x', str(extent.x))
-            friction_bp.set_attribute('extent_y', str(extent.y))
-            friction_bp.set_attribute('extent_z', str(extent.z))
-
-            # Spawn Trigger Friction
-            transform = carla.Transform()
-            transform.location = carla.Location(-10000.0, -10000.0, 0.0)
-            world.spawn_actor(friction_bp, transform)
+        # if self.config.friction is not None:
+        #     friction_bp = world.get_blueprint_library().find('static.trigger.friction')
+        #     # @comment: implement location functionality
+        #     # extent = carla.Location(1000000.0, 1000000.0, 1000000.0)
+        #     # friction_bp.set_attribute('friction', str(self.config.friction))
+        #     # friction_bp.set_attribute('extent_x', str(extent.x))
+        #     # friction_bp.set_attribute('extent_y', str(extent.y))
+        #     # friction_bp.set_attribute('extent_z', str(extent.z))
+        #
+        #     # Spawn Trigger Friction
+        #     # @comment: implement transform functionality
+        #     # transform = carla.Transform()
+        #     # transform.location = carla.Location(-10000.0, -10000.0, 0.0)
+        #     # world.spawn_actor(friction_bp, transform)
 
     def _initialize_actors(self, config):
         """

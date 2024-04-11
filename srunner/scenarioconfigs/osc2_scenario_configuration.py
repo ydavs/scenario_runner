@@ -7,7 +7,8 @@ generate relevant type objects in the standard library, and set parameters
 import sys
 from typing import List, Tuple
 
-import carla
+# import carla
+import limulator
 
 import srunner.osc2_stdlib.misc_object as misc
 import srunner.osc2_stdlib.variables as variable
@@ -44,6 +45,7 @@ def flat_list(list_of_lists):
 
 class OSC2ScenarioConfiguration(ScenarioConfiguration):
     def __init__(self, filename, client):
+        super().__init__()
         self.name = self.filename = filename
         self.ast_tree = OSC2Helper.gen_osc2_ast(self.filename)
 
@@ -56,8 +58,8 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
         self.variables = {}
         self.unit_dict = {}
         self.physical_dict = {}
-        self.weather = carla.WeatherParameters()
-        # 默认为白天
+        # @comment: changed with limulator weather parameters
+        self.weather = limulator.WeatherParameters()
         self.weather.sun_azimuth_angle = 45
         self.weather.sun_altitude_angle = 70
 
@@ -416,7 +418,7 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
         world = self.client.get_world()
         wmap = None
         if world:
-            world.get_settings()
+            # world.get_settings() @comment: it's not being used anywhere
             wmap = world.get_map()
         if world is None or (
             wmap is not None and wmap.name.split("/")[-1] != self.town
@@ -425,9 +427,10 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
             world = self.client.get_world()
 
             CarlaDataProvider.set_world(world)
-            if CarlaDataProvider.is_sync_mode():
-                world.tick()
-            else:
-                world.wait_for_tick()
+            # @comment: Assuming a async world
+            # if CarlaDataProvider.is_sync_mode():
+            #     world.tick()
+            # else:
+            #     world.wait_for_tick()
         else:
             CarlaDataProvider.set_world(world)

@@ -1,5 +1,8 @@
-import carla
-from carla import LandmarkType, Waypoint
+import limulator
+from limulator import LandmarkType, Waypoint
+
+# import carla
+# from carla import LandmarkType, Waypoint
 
 from srunner.osc2_dm.physical_types import Physical
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
@@ -297,7 +300,7 @@ class PathDiffOrigin(object):
         path_wps = []
         for pos in wps:
             pont = _map.get_waypoint(
-                pos.location, project_to_road=True, lane_type=carla.LaneType.Driving
+                pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving
             )
             if pont.road_id == wp.road_id:
                 continue

@@ -1,6 +1,6 @@
 import math
 
-import carla
+import limulator
 
 import srunner.osc2_stdlib.misc_object as misc
 import srunner.scenariomanager.carla_data_provider as carla_provider
@@ -12,7 +12,7 @@ class Vehicle:
         self.model = "vehicle.*"  # vehicle.tesla.model3
         self.rolename = "scenario"  # variable name
         self.position = misc.Position()  # doesn't depend on the position of
-        self.transform = carla.Transform()  # initial position
+        self.transform = limulator.Transform()  # initial position
         self.speed = 0  # the initial speed, m/s，default 0
         self.autopilot = False
         self.random_location = (
@@ -53,16 +53,16 @@ class Vehicle:
             # if not OpenScenarioParser.use_carla_coordinate_system:
             #     y = y * (-1.0)
             #     yaw = yaw * (-1.0)
-            self.transform = carla.Transform(
-                carla.Location(x=x, y=y, z=z),
-                carla.Rotation(yaw=yaw, pitch=pitch, roll=roll),
+            self.transform = limulator.Transform(
+                limulator.Location(x=x, y=y, z=z),
+                limulator.Rotation(yaw=yaw, pitch=pitch, roll=roll),
             )
         elif type(pos) is misc.LanePosition:
             pass
         else:
             print("no implement position type")
 
-    def get_transform(self) -> carla.Transform:
+    def get_transform(self) -> limulator.Transform:
         if OSC2Helper.wait_for_ego and self.rolename == OSC2Helper.ego_name:
             actor = carla_provider.CarlaDataProvider.get_actor_by_name(self.rolename)
             ret = carla_provider.CarlaDataProvider.get_transform(actor)

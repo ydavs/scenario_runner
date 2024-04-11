@@ -1,6 +1,7 @@
 from typing import Set
 
-import carla
+# import carla
+import limulator
 
 import srunner.scenariomanager.carla_data_provider as carla_data
 from srunner.osc2_dm.physical_types import Physical
@@ -62,21 +63,21 @@ class Path:
     @classmethod
     def path_has_sign(cls, sign_type: str):
         if sign_type == "speed_limit":
-            cls.sign_type = carla.LandmarkType.MaximumSpeed
+            cls.sign_type = limulator.LandmarkType.MaximumSpeed
         elif sign_type == "stop_sign":
-            cls.sign_type = carla.LandmarkType.StopSign
+            cls.sign_type = limulator.LandmarkType.StopSign
         elif sign_type == "yield":
-            cls.sign_type = carla.LandmarkType.YieldSign
+            cls.sign_type = limulator.LandmarkType.YieldSign
         elif sign_type == "roundabout":
-            cls.sign_type = carla.LandmarkType.Roundabout
+            cls.sign_type = limulator.LandmarkType.Roundabout
 
     @classmethod
     def path_has_no_signs(cls):
         cls.sign_types = [
-            carla.LandmarkType.MaximumSpeed,
-            carla.LandmarkType.StopSign,
-            carla.LandmarkType.YieldSign,
-            carla.LandmarkType.Roundabout,
+            limulator.LandmarkType.MaximumSpeed,
+            limulator.LandmarkType.StopSign,
+            limulator.LandmarkType.YieldSign,
+            limulator.LandmarkType.Roundabout,
         ]
 
     @classmethod
@@ -122,7 +123,7 @@ class Path:
     def check(cls, pos) -> bool:
         _map = carla_data.CarlaDataProvider.get_map(carla_data.CarlaDataProvider.world)
         wp = _map.get_waypoint(
-            pos.location, project_to_road=True, lane_type=carla.LaneType.Driving
+            pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving
         )
         # Remove the intersection
 
@@ -138,6 +139,7 @@ class Path:
         # Check whether the length of the test road meets the constraints
         if cls._length:
             len_ok = carla_data.CarlaDataProvider.check_road_length(wp, cls._length)
+
             if not len_ok:
                 return False
         # Check if the test road is signposted

@@ -9,7 +9,8 @@
 This module provides the key configuration parameters for an XML-based scenario
 """
 
-import carla
+# import carla
+import limulator
 
 
 class ActorConfigurationData(object):
@@ -43,7 +44,8 @@ class ActorConfigurationData(object):
         pos_z = float(node.attrib.get('z', 0))
         yaw = float(node.attrib.get('yaw', 0))
 
-        transform = carla.Transform(carla.Location(x=pos_x, y=pos_y, z=pos_z), carla.Rotation(yaw=yaw))
+        # @todo: Correct this blashphemy!
+        # transform = carla.Transform(carla.Location(x=pos_x, y=pos_y, z=pos_z), carla.Rotation(yaw=yaw))
 
         rolename = node.attrib.get('rolename', rolename)
 
@@ -73,7 +75,8 @@ class ActorConfigurationData(object):
         pos_y = float(actor_dict['y']) if 'y' in actor_dict else 0
         pos_z = float(actor_dict['z']) if 'z' in actor_dict else 0
         yaw = float(actor_dict['yaw']) if 'yaw' in actor_dict else 0
-        transform = carla.Transform(carla.Location(x=pos_x, y=pos_y, z=pos_z), carla.Rotation(yaw=yaw))
+        # @todo: Correct this blasphemy
+        # transform = carla.Transform(carla.Location(x=pos_x, y=pos_y, z=pos_z), carla.Rotation(yaw=yaw))
 
         rolename = actor_dict['rolename'] if 'rolename' in actor_dict else rolename
         speed = actor_dict['speed'] if 'speed' in actor_dict else 0
@@ -104,7 +107,8 @@ class ScenarioConfiguration(object):
         self.type = None
         self.route = None
         self.agent = None
-        self.weather = carla.WeatherParameters(sun_altitude_angle=70, cloudiness=50)
+        self.weather = limulator.WeatherParameters()
+        # self.weather = carla.WeatherParameters(sun_altitude_angle=70, cloudiness=50)
         self.friction = None
         self.subtype = None
         self.route_var_name = None
