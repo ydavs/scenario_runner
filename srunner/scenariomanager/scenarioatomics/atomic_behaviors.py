@@ -123,6 +123,7 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
         Default setup
         """
         self.logger.debug("%s.setup()" % (self.__class__.__name__))
+        # print(f'calling {self.__class__.__name__}')
         return True
 
     def initialise(self):
@@ -145,6 +146,7 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
         """
         Default terminate. Can be extended in derived class
         """
+        print(f'Terminating {self.__class__.__name__}')
         self.logger.debug("%s.terminate()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
 
 
@@ -375,7 +377,7 @@ class AtomicBehavior(py_trees.behaviour.Behaviour):
 #
 #         return py_trees.common.Status.SUCCESS
 
-
+# @comment: Updating all the actors with controllers
 class UpdateAllActorControls(AtomicBehavior):
 
     """
@@ -2746,6 +2748,7 @@ class WaypointFollower(AtomicBehavior):
         Checks if another WaypointFollower behavior is already running for this actor.
         If this is the case, a termination signal is sent to the running behavior.
         """
+        print('Initializing WaypointFollower')
         super(WaypointFollower, self).initialise()
         self._start_time = GameTime.get_time()
         self._unique_id = int(round(time.time() * 1e9))
@@ -2890,17 +2893,18 @@ class WaypointFollower(AtomicBehavior):
         On termination of this behavior,
         the controls should be set back to 0.
         """
-        for actor in self._local_planner_dict:
-            if actor is not None and actor.is_alive:
-                control, _ = get_actor_control(actor)
-                actor.apply_control(control)
-                local_planner = self._local_planner_dict[actor]
-                if local_planner is not None and local_planner != "Walker":
-                    local_planner.reset_vehicle()
-                    local_planner = None
-
-        self._local_planner_dict = {}
-        self._actor_dict = {}
+        print('Terminating Waypoint Follower')
+        # for actor in self._local_planner_dict:
+        #     if actor is not None and actor.is_alive:
+        #         control, _ = get_actor_control(actor)
+        #         actor.apply_control(control)
+        #         local_planner = self._local_planner_dict[actor]
+        #         if local_planner is not None and local_planner != "Walker":
+        #             local_planner.reset_vehicle()
+        #             local_planner = None
+        #
+        # self._local_planner_dict = {}
+        # self._actor_dict = {}
         super(WaypointFollower, self).terminate(new_status)
 
 
@@ -2951,12 +2955,14 @@ class LaneChange(WaypointFollower):
     def initialise(self):
 
         # get start position
+        print(f'Lane change start location is {self._actor.get_location()}')
         position_actor = CarlaDataProvider.get_map().get_waypoint(self._actor.get_location())
 
         # calculate plan with scenario_helper function
         self._plan, self._target_lane_id = generate_target_waypoint_list_multilane(
             position_actor, self._direction, self._distance_same_lane,
             self._distance_other_lane, self._distance_lane_change, check=True, lane_changes=self._lane_changes)
+        print(f'Lane change target lane id is {self._target_lane_id}')
         super(LaneChange, self).initialise()
 
     def update(self):
@@ -3114,19 +3120,24 @@ class ActorTransformSetter(AtomicBehavior):
         super(ActorTransformSetter, self).__init__(name, actor)
         self._transform = transform
         self._physics = physics
+
         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
 
     def initialise(self):
+        print(f'Initializing Actor Transform Setter')
         if self._actor.is_alive:
             self._actor.set_target_velocity(limulator.Vector3D(0, 0, 0))
             self._actor.set_target_angular_velocity(limulator.Vector3D(0, 0, 0))
             self._actor.set_transform(self._transform)
+            print(f'Setting actor transform setter at {self._transform}')
         super(ActorTransformSetter, self).initialise()
 
     def update(self):
         """
         Transform actor
         """
+
+        print(f'Updating Actor Transform Setter')
         new_status = py_trees.common.Status.RUNNING
 
         if not self._actor.is_alive:

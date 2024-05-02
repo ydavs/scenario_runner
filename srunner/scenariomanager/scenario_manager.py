@@ -172,13 +172,17 @@ class ScenarioManager(object):
             # if self._agent is not None:
             #     self.ego_vehicles[0].apply_control(ego_action)
 
+            # print("\n")
+            # py_trees.display.print_ascii_tree(self.scenario_tree, show_status=True)
+            # sys.stdout.flush()
+
             # Tick scenario
             self.scenario_tree.tick_once()
 
-            if self._debug_mode:
-                print("\n")
-                py_trees.display.print_ascii_tree(self.scenario_tree, show_status=True)
-                sys.stdout.flush()
+            #if self._debug_mode:
+            # print("\n")
+            # py_trees.display.print_ascii_tree(self.scenario_tree, show_status=True)
+            # sys.stdout.flush()
 
             if self.scenario_tree.status != py_trees.common.Status.RUNNING:
                 self._running = False

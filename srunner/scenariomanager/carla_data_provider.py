@@ -19,11 +19,10 @@ from numpy import random
 from six import iteritems
 
 import sys
-sys.path.append(r"C:\Users\Sourav\Desktop\Limulator\PythonAPI\carla")
+sys.path.append(r'/home/simdaas/Limulator/PythonAPI/carla')
+from agents.navigation.global_route_planner import GlobalRoutePlanner
 
 import limulator
-
-from agents.navigation.global_route_planner import GlobalRoutePlanner
 
 
 # @todo: give actor  velocity
@@ -566,18 +565,17 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
             print("No more spawn points to use")
             return None
         else:
-            while CarlaDataProvider._spawn_index < len(CarlaDataProvider._spawn_points):
-                pos = CarlaDataProvider._spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
-                CarlaDataProvider._spawn_index += 1
-                wp = CarlaDataProvider.get_map().get_waypoint(pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving)
+            pos = CarlaDataProvider._spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
+            CarlaDataProvider._spawn_index += 1
+            wp = CarlaDataProvider.get_map().get_waypoint(pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving)
 
-                road_lanes = CarlaDataProvider.get_road_lanes(wp)
+            road_lanes = CarlaDataProvider.get_road_lanes(wp)
 
-                lane = int(float(lane_num))
-                if lane > len(road_lanes):
-                    continue
-                else:
-                    return road_lanes[lane - 1]
+            lane = int(float(lane_num))
+            if lane > len(road_lanes):
+                return None
+            else:
+                return road_lanes[lane - 1]
 
     # @comment: is this necessary? Yes, it is.
     @staticmethod
@@ -1017,6 +1015,11 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         #             pass
         #         else:
         #             raise e
+
+        for actor_id in CarlaDataProvider._carla_actor_pool.copy():
+            actor = CarlaDataProvider._carla_actor_pool[actor_id]
+            if actor is not None and actor.is_alive:
+                actor.destroy()
 
         CarlaDataProvider._actor_velocity_map.clear()
         CarlaDataProvider._actor_location_map.clear()

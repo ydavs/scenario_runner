@@ -1,0 +1,25 @@
+import basic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: Model3                # ego car
+    ego_vehicle: Model3               # The other car
+
+    event start
+    event end
+    event left
+    event right
+    do serial:
+        spawn: serial(duration:10s):
+            ego_vehicle.drive(path) with:
+                speed(20kph)
+                lane(1, at: start)
+        speedup: serial(duration:10s):
+            ego_vehicle.drive(path) with:
+                change_speed(20kph)
+        continue: serial(duration:10s):
+            ego_vehicle.drive(path) with:
+                keep_lane()

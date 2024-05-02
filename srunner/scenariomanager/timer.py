@@ -110,6 +110,7 @@ class SimulationTimeCondition(py_trees.behaviour.Behaviour):
         Set start_time to current GameTime
         """
         self._start_time = GameTime.get_time()
+        print(f'start time is {self._start_time}')
         self.logger.debug("%s.initialise()" % (self.__class__.__name__))
 
     def update(self):

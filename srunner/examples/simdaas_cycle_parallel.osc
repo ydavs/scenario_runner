@@ -1,0 +1,23 @@
+import basic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: Crossbike            # ego car
+    ego_vehicle: Rubicon             # The other car
+
+    event start
+    event end
+    event left
+    event right
+    do serial:
+        spawn: parallel(duration: 30s):
+            npc.drive(path) with:
+                speed(15kph)
+                lane(2, at: start) # left to right: [1..n]
+            ego_vehicle.drive(path) with:
+                speed(15kph)
+                lane(left_of: npc, at: start)
+                position(15m, behind: npc, at: start)

@@ -103,7 +103,8 @@ class ScenarioRunner(object):
         #     self.module_agent = importlib.import_module(module_name)
 
         # Create the ScenarioManager
-        self.manager = ScenarioManager(self._args.debug, self._args.sync, self._args.timeout)
+        # self.manager = ScenarioManager(self._args.debug, self._args.sync, self._args.timeout)
+        self.manager = ScenarioManager(self._args.debug, self._args.sync, 1000000000000000)
 
         # Create signal handler for SIGINT
         self._shutdown_requested = False
@@ -235,9 +236,9 @@ class ScenarioRunner(object):
 
             for i, _ in enumerate(self.ego_vehicles):
                 self.ego_vehicles[i].set_transform(ego_vehicles[i].transform)
-                self.ego_vehicles[i].set_target_velocity(carla.Vector3D())
-                self.ego_vehicles[i].set_target_angular_velocity(carla.Vector3D())
-                self.ego_vehicles[i].apply_control(carla.VehicleControl())
+                self.ego_vehicles[i].set_target_velocity(limulator.Vector3D())
+                self.ego_vehicles[i].set_target_angular_velocity(limulator.Vector3D())
+                self.ego_vehicles[i].apply_control(limulator.VehicleControl())
                 CarlaDataProvider.register_actor(self.ego_vehicles[i], ego_vehicles[i].transform)
 
         # sync state
@@ -327,11 +328,10 @@ class ScenarioRunner(object):
 
         # Wait for the world to be ready
         # @comment: Only aysnc mode if supported
-        # self.world.wait_for_tick()
-        # if CarlaDataProvider.is_sync_mode():
-        #     self.world.tick()
-        # else:
-        #     self.world.wait_for_tick()
+        if CarlaDataProvider.is_sync_mode():
+            self.world.tick()
+        else:
+            self.world.wait_for_tick()
 
         # @comment: Unnecessary. Map is generated on the fly!
         # map_name = CarlaDataProvider.get_map().name.split('/')[-1]
@@ -382,6 +382,7 @@ class ScenarioRunner(object):
                                         ego_vehicles=self.ego_vehicles,
                                         config=config,
                                         osc2_file=self._args.openscenario2,
+
                                         timeout=100000)
         except Exception as exception:                  # pylint: disable=broad-except
             print("The scenario cannot be loaded")

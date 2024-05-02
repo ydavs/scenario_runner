@@ -1,0 +1,46 @@
+import basic.osc
+
+struct speeds:
+    def compute(x:velocity, y:velocity) -> velocity is expression x-y
+
+scenario dut.cut_in_and_slow:
+
+    ego_vehicle: Model3
+    a: time
+    b: velocity
+
+
+    event start
+    event end
+    do serial:
+        get_ahead: parallel(duration: a):
+            ego_vehicle.drive() with:
+                speed(b)
+                lane(1, at: start) # left to right: [1..n]
+
+        change_lane: parallel(duration: 5s):
+            ego_vehicle.drive()
+
+        slow: parallel(duration: 20s):
+            ego_vehicle.drive()
+
+scenario top:
+    set_map("Town04")
+    min_lane: int = 2
+    path_min_driving_lanes(min_lane)
+
+    ego_vehicle: Model3
+    time_a: time = 30s
+
+    c: speeds
+
+    speed_a: velocity
+    keep (default speed_a == 30kph)
+    speed_b: velocity = 30kph
+
+    speed_c: velocity = speeds.compute(x: 70kph, y:20kph)
+
+    do serial:
+        # dut.cut_in_and_slow(a: time_a)
+        dut.cut_in_and_slow(a: time_a, b: speed_a)
+        # dut.cut_in_and_slow()

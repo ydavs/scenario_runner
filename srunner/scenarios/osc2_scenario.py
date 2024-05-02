@@ -9,10 +9,16 @@ import sys
 from typing import List, Tuple
 
 import py_trees
-# from agents.navigation.global_route_planner import GlobalRoutePlanner
+
+import sys
+sys.path.append(r'/home/simdaas/Limulator/PythonAPI/carla')
+from agents.navigation.global_route_planner import GlobalRoutePlanner
+
 
 from srunner.osc2.ast_manager import ast_node
 from srunner.osc2.ast_manager.ast_vistor import ASTVisitor
+
+
 
 # OSC2
 from srunner.osc2.symbol_manager.method_symbol import MethodSymbol
@@ -21,8 +27,8 @@ from srunner.osc2.utils.log_manager import (LOG_INFO, LOG_ERROR, LOG_WARNING)
 from srunner.osc2.utils.relational_operator import RelationalOperator
 from srunner.osc2_dm.physical_types import Physical, Range
 
-# from sqlalchemy import true
-# from srunner.osc2_stdlib import event, variables
+from sqlalchemy import true
+from srunner.osc2_stdlib import event, variables
 from srunner.osc2_stdlib.modifier import (
     AccelerationModifier,
     ChangeLaneModifier,
@@ -45,6 +51,7 @@ from srunner.scenariomanager.scenarioatomics.atomic_behaviors import (
     WaypointFollower,
     calculate_distance,
 )
+
 from srunner.scenariomanager.scenarioatomics.atomic_criteria import CollisionTest
 from srunner.scenariomanager.scenarioatomics.atomic_trigger_conditions import (
     IfTriggerer,
@@ -362,27 +369,27 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
     if end_wp:
         # @comment: commenting for now!
         current_car_conf = config.get_car_config(npc_name)
-        # current_car_transform = current_car_conf.get_arg("init_transform")
-        #
-        # # Get the global route planner, used to calculate the route
-        # grp = GlobalRoutePlanner(CarlaDataProvider.get_world().get_map(), 0.5)
-        # # grp.setup()
-        #
-        # distance = calculate_distance(
-        #     current_car_transform.location, end_wp.transform.location, grp
-        # )
-        #
-        # car_need_speed = distance / float(duration)
-        #
-        # current_car_conf.set_arg({"desired_speed": car_need_speed})
-        # LOG_WARNING(
-        #     f"{npc_name} car desired speed will be set to {car_need_speed * 3.6} km/h"
-        # )
-        #
-        # car_actor = CarlaDataProvider.get_actor_by_name(npc_name)
-        # car_driving = WaypointFollower(car_actor, car_need_speed)
-        # # car_driving.set_duration(duration)
-        # father_tree.add_child(car_driving)
+        current_car_transform = current_car_conf.get_arg("init_transform")
+
+        # Get the global route planner, used to calculate the route
+        grp = GlobalRoutePlanner(CarlaDataProvider.get_world().get_map(), 0.5)
+        # grp.setup()
+
+        distance = calculate_distance(
+            current_car_transform.location, end_wp.transform.location, grp
+        )
+
+        car_need_speed = distance / float(duration)
+
+        current_car_conf.set_arg({"desired_speed": car_need_speed})
+        LOG_WARNING(
+            f"{npc_name} car desired speed will be set to {car_need_speed * 3.6} km/h"
+        )
+
+        car_actor = CarlaDataProvider.get_actor_by_name(npc_name)
+        car_driving = WaypointFollower(car_actor, car_need_speed)
+        # car_driving.set_duration(duration)
+        father_tree.add_child(car_driving)
 
     if end_lane_wp:
         current_car_conf = config.get_car_config(npc_name)

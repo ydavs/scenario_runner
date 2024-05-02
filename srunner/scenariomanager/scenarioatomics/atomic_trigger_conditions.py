@@ -24,14 +24,18 @@ import operator
 import datetime
 import math
 import py_trees
-# import carla
 
-# from agents.navigation.global_route_planner import GlobalRoutePlanner
+import limulator
+
+import sys
+sys.path.append(r'/home/simdaas/Limulator/PythonAPI/carla')
+from agents.navigation.global_route_planner import GlobalRoutePlanner
+
 
 from srunner.scenariomanager.scenarioatomics.atomic_behaviors import calculate_distance
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.timer import GameTime
-# from srunner.tools.scenario_helper import get_distance_along_route, get_distance_between_actors
+from srunner.tools.scenario_helper import get_distance_along_route, get_distance_between_actors
 
 import srunner.tools as sr_tools
 
@@ -118,43 +122,43 @@ class TimeOfWaitComparison(AtomicCondition):
         return new_status
 
 
-# class InTriggerNearCollision(AtomicCondition):
-#     def __init__(self, reference_actor, actor, distance, comparison_operator=operator.lt,
-#                  name="InTriggerNearCollision"):
-#         """
-#         Setup trigger distance
-#         """
-#         super(InTriggerNearCollision, self).__init__(name)
-#         self.logger.debug("%s.__init__()" % self.__class__.__name__)
-#         self._reference_actor = reference_actor
-#         self._actor = actor
-#         self._distance = distance
-#         self._comparison_operator = comparison_operator
-#         self._control = self._reference_actor.get_control()
-#
-#     def update(self):
-#         """
-#         Check if the ego vehicle is within trigger distance to other actor
-#         """
-#         new_status = py_trees.common.Status.RUNNING
-#
-#         location = CarlaDataProvider.get_location(self._actor)
-#         reference_location = CarlaDataProvider.get_location(self._reference_actor)
-#
-#         if location is None or reference_location is None:
-#             return new_status
-#
-#         if self._comparison_operator(calculate_distance(location, reference_location), self._distance):
-#             new_status = py_trees.common.Status.SUCCESS
-#             print("Too close, collision!")
-#             self._control.throttle = 0
-#             self._control.brake = 1
-#             print('decelerate!!!')
-#             self._reference_actor.apply_control(self._control)
-#         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
-#
-#         return new_status
-#
+class InTriggerNearCollision(AtomicCondition):
+    def __init__(self, reference_actor, actor, distance, comparison_operator=operator.lt,
+                 name="InTriggerNearCollision"):
+        """
+        Setup trigger distance
+        """
+        super(InTriggerNearCollision, self).__init__(name)
+        self.logger.debug("%s.__init__()" % self.__class__.__name__)
+        self._reference_actor = reference_actor
+        self._actor = actor
+        self._distance = distance
+        self._comparison_operator = comparison_operator
+        self._control = self._reference_actor.get_control()
+
+    def update(self):
+        """
+        Check if the ego vehicle is within trigger distance to other actor
+        """
+        new_status = py_trees.common.Status.RUNNING
+
+        location = CarlaDataProvider.get_location(self._actor)
+        reference_location = CarlaDataProvider.get_location(self._reference_actor)
+
+        if location is None or reference_location is None:
+            return new_status
+
+        if self._comparison_operator(calculate_distance(location, reference_location), self._distance):
+            new_status = py_trees.common.Status.SUCCESS
+            print("Too close, collision!")
+            self._control.throttle = 0
+            self._control.brake = 1
+            print('decelerate!!!')
+            self._reference_actor.apply_control(self._control)
+        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+
+        return new_status
+
 #
 # class InTriggerDistanceToOSCPosition(AtomicCondition):
 #
@@ -1188,53 +1192,53 @@ class InTimeToArrivalToLocation(AtomicCondition):
 #         return new_status
 #
 #
-# class DriveDistance(AtomicCondition):
-#
-#     """
-#     This class contains an atomic behavior to drive a certain distance.
-#
-#     Important parameters:
-#     - actor: CARLA actor to execute the condition
-#     - distance: Distance for this condition in meters
-#
-#     The condition terminates with SUCCESS, when the actor drove at least the given distance
-#     """
-#
-#     def __init__(self, actor, distance, name="DriveDistance"):
-#         """
-#         Setup parameters
-#         """
-#         super(DriveDistance, self).__init__(name)
-#         self.logger.debug("%s.__init__()" % (self.__class__.__name__))
-#         self._target_distance = distance
-#         self._distance = 0
-#         self._location = None
-#         self._actor = actor
-#
-#     def initialise(self):
-#         self._location = CarlaDataProvider.get_location(self._actor)
-#         super(DriveDistance, self).initialise()
-#
-#     def update(self):
-#         """
-#         Check driven distance
-#         """
-#         new_status = py_trees.common.Status.RUNNING
-#
-#         if self._location is None:
-#             return new_status
-#
-#         new_location = CarlaDataProvider.get_location(self._actor)
-#         self._distance += calculate_distance(self._location, new_location)
-#         self._location = new_location
-#
-#         if self._distance > self._target_distance:
-#             new_status = py_trees.common.Status.SUCCESS
-#
-#         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
-#         return new_status
-#
-#
+class DriveDistance(AtomicCondition):
+
+    """
+    This class contains an atomic behavior to drive a certain distance.
+
+    Important parameters:
+    - actor: CARLA actor to execute the condition
+    - distance: Distance for this condition in meters
+
+    The condition terminates with SUCCESS, when the actor drove at least the given distance
+    """
+
+    def __init__(self, actor, distance, name="DriveDistance"):
+        """
+        Setup parameters
+        """
+        super(DriveDistance, self).__init__(name)
+        self.logger.debug("%s.__init__()" % (self.__class__.__name__))
+        self._target_distance = distance
+        self._distance = 0
+        self._location = None
+        self._actor = actor
+
+    def initialise(self):
+        self._location = CarlaDataProvider.get_location(self._actor)
+        super(DriveDistance, self).initialise()
+
+    def update(self):
+        """
+        Check driven distance
+        """
+        new_status = py_trees.common.Status.RUNNING
+
+        if self._location is None:
+            return new_status
+
+        new_location = CarlaDataProvider.get_location(self._actor)
+        self._distance += calculate_distance(self._location, new_location)
+        self._location = new_location
+
+        if self._distance > self._target_distance:
+            new_status = py_trees.common.Status.SUCCESS
+
+        self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))
+        return new_status
+
+
 # class AtRightmostLane(AtomicCondition):
 #
 #     """

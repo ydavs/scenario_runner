@@ -65,12 +65,12 @@ class BasicScenario(object):
         self._initialize_actors(config)
 
         # @comment: ticking happens here
-        # if CarlaDataProvider.is_runtime_init_mode():
-        #     world.wait_for_tick()
-        # elif CarlaDataProvider.is_sync_mode():
-        #     world.tick()
-        # else:
-        #     world.wait_for_tick()
+        if CarlaDataProvider.is_runtime_init_mode():
+            world.wait_for_tick()
+        elif CarlaDataProvider.is_sync_mode():
+            world.tick()
+        else:
+            world.wait_for_tick()
 
         # Main scenario tree
         self.scenario_tree = py_trees.composites.Parallel(name, policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ONE)
@@ -104,29 +104,30 @@ class BasicScenario(object):
         # And then add it to the main tree
         self.scenario_tree.add_child(self.behavior_tree)
 
+        # @comment: Reenable this when required
         # Create the criteria tree (if needed)
-        if self.criteria_enable:
-            criteria = self._create_test_criteria()
-
-            # All the work is done, thanks!
-            if isinstance(criteria, py_trees.composites.Composite):
-                self.criteria_tree = criteria
-
-            # Lazy mode, but its okay, we'll create the parallel behavior tree for you.
-            elif isinstance(criteria, list):
-                for criterion in criteria:
-                    criterion.terminate_on_failure = terminate_on_failure
-
-                self.criteria_tree = py_trees.composites.Parallel(name="Test Criteria",
-                                                                  policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
-                self.criteria_tree.add_children(criteria)
-                self.criteria_tree.setup(timeout=1)
-
-            else:
-                raise ValueError("WARNING: Scenario {} couldn't be setup, make sure the criteria is either "
-                                 "a list or a py_trees.composites.Composite".format(self.name))
-
-            self.scenario_tree.add_child(self.criteria_tree)
+        # if self.criteria_enable:
+        #     criteria = self._create_test_criteria()
+        #
+        #     # All the work is done, thanks!
+        #     if isinstance(criteria, py_trees.composites.Composite):
+        #         self.criteria_tree = criteria
+        #
+        #     # Lazy mode, but its okay, we'll create the parallel behavior tree for you.
+        #     elif isinstance(criteria, list):
+        #         for criterion in criteria:
+        #             criterion.terminate_on_failure = terminate_on_failure
+        #
+        #         self.criteria_tree = py_trees.composites.Parallel(name="Test Criteria",
+        #                                                           policy=py_trees.common.ParallelPolicy.SUCCESS_ON_ALL)
+        #         self.criteria_tree.add_children(criteria)
+        #         self.criteria_tree.setup(timeout=1)
+        #
+        #     else:
+        #         raise ValueError("WARNING: Scenario {} couldn't be setup, make sure the criteria is either "
+        #                          "a list or a py_trees.composites.Composite".format(self.name))
+        #
+        #     self.scenario_tree.add_child(self.criteria_tree)
 
         # Create the timeout behavior
         self.timeout_node = self._create_timeout_behavior()

@@ -15,107 +15,109 @@ import shapely.affinity
 
 import numpy as np
 
-# import carla
-# from agents.tools.misc import vector
-# from agents.navigation.local_planner import RoadOption
+import limulator
+import sys
+sys.path.append(r'/home/simdaas/Limulator/PythonAPI/carla')
+from agents.tools.misc import vector
+from agents.navigation.local_planner import RoadOption
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 
 
-# def get_distance_along_route(route, target_location):
-#     """
-#     Calculate the distance of the given location along the route
-#
-#     Note: If the location is not along the route, the route length will be returned
-#     """
-#
-#     wmap = CarlaDataProvider.get_map()
-#     covered_distance = 0
-#     prev_position = None
-#     found = False
-#
-#     # Don't use the input location, use the corresponding wp as location
-#     target_location_from_wp = wmap.get_waypoint(target_location).transform.location
-#
-#     for position, _ in route:
-#
-#         location = target_location_from_wp
-#
-#         # Don't perform any calculations for the first route point
-#         if not prev_position:
-#             prev_position = position
-#             continue
-#
-#         # Calculate distance between previous and current route point
-#         interval_length_squared = ((prev_position.x - position.x) ** 2) + ((prev_position.y - position.y) ** 2)
-#         distance_squared = ((location.x - prev_position.x) ** 2) + ((location.y - prev_position.y) ** 2)
-#
-#         # Close to the current position? Stop calculation
-#         if distance_squared < 0.01:
-#             break
-#
-#         if distance_squared < 400 and not distance_squared < interval_length_squared:
-#             # Check if a neighbor lane is closer to the route
-#             # Do this only in a close distance to correct route interval, otherwise the computation load is too high
-#             starting_wp = wmap.get_waypoint(location)
-#             wp = starting_wp.get_left_lane()
-#             while wp is not None:
-#                 new_location = wp.transform.location
-#                 new_distance_squared = ((new_location.x - prev_position.x) ** 2) + (
-#                     (new_location.y - prev_position.y) ** 2)
-#
-#                 if np.sign(starting_wp.lane_id) != np.sign(wp.lane_id):
-#                     break
-#
-#                 if new_distance_squared < distance_squared:
-#                     distance_squared = new_distance_squared
-#                     location = new_location
-#                 else:
-#                     break
-#
-#                 wp = wp.get_left_lane()
-#
-#             wp = starting_wp.get_right_lane()
-#             while wp is not None:
-#                 new_location = wp.transform.location
-#                 new_distance_squared = ((new_location.x - prev_position.x) ** 2) + (
-#                     (new_location.y - prev_position.y) ** 2)
-#
-#                 if np.sign(starting_wp.lane_id) != np.sign(wp.lane_id):
-#                     break
-#
-#                 if new_distance_squared < distance_squared:
-#                     distance_squared = new_distance_squared
-#                     location = new_location
-#                 else:
-#                     break
-#
-#                 wp = wp.get_right_lane()
-#
-#         if distance_squared < interval_length_squared:
-#             # The location could be inside the current route interval, if route/lane ids match
-#             # Note: This assumes a sufficiently small route interval
-#             # An alternative is to compare orientations, however, this also does not work for
-#             # long route intervals
-#
-#             curr_wp = wmap.get_waypoint(position)
-#             prev_wp = wmap.get_waypoint(prev_position)
-#             wp = wmap.get_waypoint(location)
-#
-#             if prev_wp and curr_wp and wp:
-#                 if wp.road_id in (prev_wp.road_id, curr_wp.road_id):
-#                     # Roads match, now compare the sign of the lane ids
-#                     if (np.sign(wp.lane_id) == np.sign(prev_wp.lane_id) or
-#                             np.sign(wp.lane_id) == np.sign(curr_wp.lane_id)):
-#                         # The location is within the current route interval
-#                         covered_distance += math.sqrt(distance_squared)
-#                         found = True
-#                         break
-#
-#         covered_distance += math.sqrt(interval_length_squared)
-#         prev_position = position
-#
-#     return covered_distance, found
+def get_distance_along_route(route, target_location):
+    """
+    Calculate the distance of the given location along the route
+
+    Note: If the location is not along the route, the route length will be returned
+    """
+
+    wmap = CarlaDataProvider.get_map()
+    covered_distance = 0
+    prev_position = None
+    found = False
+
+    # Don't use the input location, use the corresponding wp as location
+    target_location_from_wp = wmap.get_waypoint(target_location).transform.location
+
+    for position, _ in route:
+
+        location = target_location_from_wp
+
+        # Don't perform any calculations for the first route point
+        if not prev_position:
+            prev_position = position
+            continue
+
+        # Calculate distance between previous and current route point
+        interval_length_squared = ((prev_position.x - position.x) ** 2) + ((prev_position.y - position.y) ** 2)
+        distance_squared = ((location.x - prev_position.x) ** 2) + ((location.y - prev_position.y) ** 2)
+
+        # Close to the current position? Stop calculation
+        if distance_squared < 0.01:
+            break
+
+        if distance_squared < 400 and not distance_squared < interval_length_squared:
+            # Check if a neighbor lane is closer to the route
+            # Do this only in a close distance to correct route interval, otherwise the computation load is too high
+            starting_wp = wmap.get_waypoint(location)
+            wp = starting_wp.get_left_lane()
+            while wp is not None:
+                new_location = wp.transform.location
+                new_distance_squared = ((new_location.x - prev_position.x) ** 2) + (
+                    (new_location.y - prev_position.y) ** 2)
+
+                if np.sign(starting_wp.lane_id) != np.sign(wp.lane_id):
+                    break
+
+                if new_distance_squared < distance_squared:
+                    distance_squared = new_distance_squared
+                    location = new_location
+                else:
+                    break
+
+                wp = wp.get_left_lane()
+
+            wp = starting_wp.get_right_lane()
+            while wp is not None:
+                new_location = wp.transform.location
+                new_distance_squared = ((new_location.x - prev_position.x) ** 2) + (
+                    (new_location.y - prev_position.y) ** 2)
+
+                if np.sign(starting_wp.lane_id) != np.sign(wp.lane_id):
+                    break
+
+                if new_distance_squared < distance_squared:
+                    distance_squared = new_distance_squared
+                    location = new_location
+                else:
+                    break
+
+                wp = wp.get_right_lane()
+
+        if distance_squared < interval_length_squared:
+            # The location could be inside the current route interval, if route/lane ids match
+            # Note: This assumes a sufficiently small route interval
+            # An alternative is to compare orientations, however, this also does not work for
+            # long route intervals
+
+            curr_wp = wmap.get_waypoint(position)
+            prev_wp = wmap.get_waypoint(prev_position)
+            wp = wmap.get_waypoint(location)
+
+            if prev_wp and curr_wp and wp:
+                if wp.road_id in (prev_wp.road_id, curr_wp.road_id):
+                    # Roads match, now compare the sign of the lane ids
+                    if (np.sign(wp.lane_id) == np.sign(prev_wp.lane_id) or
+                            np.sign(wp.lane_id) == np.sign(curr_wp.lane_id)):
+                        # The location is within the current route interval
+                        covered_distance += math.sqrt(distance_squared)
+                        found = True
+                        break
+
+        covered_distance += math.sqrt(interval_length_squared)
+        prev_position = position
+
+    return covered_distance, found
 
 
 # def get_crossing_point(actor):
@@ -296,67 +298,67 @@ def generate_target_waypoint_list_multilane(waypoint, change='left',  # pylint: 
 
     # @comment: provide and uncomment
     plan = []
-    # plan.append((waypoint, RoadOption.LANEFOLLOW))  # start position
-    #
-    # option = RoadOption.LANEFOLLOW
-    #
-    # # Same lane
-    # distance = 0
-    # while distance < distance_same_lane:
-    #     next_wps = plan[-1][0].next(step_distance)
-    #     if not next_wps:
-    #         return None, None
-    #     next_wp = next_wps[0]
-    #     distance += next_wp.transform.location.distance(plan[-1][0].transform.location)
-    #     plan.append((next_wp, RoadOption.LANEFOLLOW))
-    #
-    # if change == 'left':
-    #     option = RoadOption.CHANGELANELEFT
-    # elif change == 'right':
-    #     option = RoadOption.CHANGELANERIGHT
-    # else:
-    #     # ERROR, input value for change must be 'left' or 'right'
-    #     return None, None
-    #
-    # lane_changes_done = 0
-    # lane_change_distance = total_lane_change_distance / lane_changes
-    #
-    # # Lane change
-    # while lane_changes_done < lane_changes:
-    #
-    #     # Move forward
-    #     next_wps = plan[-1][0].next(lane_change_distance)
-    #     if not next_wps:
-    #         return None, None
-    #     next_wp = next_wps[0]
-    #
-    #     # Get the side lane
-    #     if change == 'left':
-    #         if check and str(next_wp.lane_change) not in ['Left', 'Both']:
-    #             return None, None
-    #         side_wp = next_wp.get_left_lane()
-    #     else:
-    #         if check and str(next_wp.lane_change) not in ['Right', 'Both']:
-    #             return None, None
-    #         side_wp = next_wp.get_right_lane()
-    #
-    #     if not side_wp or side_wp.lane_type != carla.LaneType.Driving:
-    #         return None, None
-    #
-    #     # Update the plan
-    #     plan.append((side_wp, option))
-    #     lane_changes_done += 1
-    #
-    # # Other lane
-    # distance = 0
-    # while distance < distance_other_lane:
-    #     next_wps = plan[-1][0].next(step_distance)
-    #     if not next_wps:
-    #         return None, None
-    #     next_wp = next_wps[0]
-    #     distance += next_wp.transform.location.distance(plan[-1][0].transform.location)
-    #     plan.append((next_wp, RoadOption.LANEFOLLOW))
-    #
+    plan.append((waypoint, RoadOption.LANEFOLLOW))  # start position
+
+    option = RoadOption.LANEFOLLOW
+
+    # Same lane
+    distance = 0
+    while distance < distance_same_lane:
+        next_wps = plan[-1][0].next(step_distance)
+        if not next_wps:
+            return None, None
+        next_wp = next_wps[0]
+        distance += next_wp.transform.location.distance(plan[-1][0].transform.location)
+        plan.append((next_wp, RoadOption.LANEFOLLOW))
+
+    if change == 'left':
+        option = RoadOption.CHANGELANELEFT
+    elif change == 'right':
+        option = RoadOption.CHANGELANERIGHT
+    else:
+        # ERROR, input value for change must be 'left' or 'right'
+        return None, None
+
+    lane_changes_done = 0
+    lane_change_distance = total_lane_change_distance / lane_changes
+
+    # Lane change
+    while lane_changes_done < lane_changes:
+
+        # Move forward
+        next_wps = plan[-1][0].next(lane_change_distance)
+        if not next_wps:
+            return None, None
+        next_wp = next_wps[0]
+
+        # Get the side lane
+        if change == 'left':
+            if check and str(next_wp.lane_change) not in ['Left', 'Both']:
+                return None, None
+            side_wp = next_wp.get_left_lane()
+        else:
+            if check and str(next_wp.lane_change) not in ['Right', 'Both']:
+                return None, None
+            side_wp = next_wp.get_right_lane()
+
+        if not side_wp or side_wp.lane_type != limulator.LaneType.Driving:
+            return None, None
+
+        # Update the plan
+        plan.append((side_wp, option))
+        lane_changes_done += 1
+
+    # Other lane
+    distance = 0
+    while distance < distance_other_lane:
+        next_wps = plan[-1][0].next(step_distance)
+        if not next_wps:
+            return None, None
+        next_wp = next_wps[0]
+        distance += next_wp.transform.location.distance(plan[-1][0].transform.location)
+        plan.append((next_wp, RoadOption.LANEFOLLOW))
+
     target_lane_id = plan[-1][0].lane_id
 
     return plan, target_lane_id
@@ -637,106 +639,106 @@ def detect_lane_obstacle(actor, extension_factor=3, margin=1.02):
 #     return transform
 
 
-# def get_troad_from_transform(actor_transform):
-#     """
-#     This function finds the lateral road position (t) from actor_transform
-#     """
-#     actor_loc = actor_transform.location
-#     c_wp = CarlaDataProvider.get_map().get_waypoint(actor_loc)
-#     left_lanes, right_lanes = [], []
-#     # opendrive standard: (left ==> +ve lane_id) and (right ==> -ve lane_id)
-#     ref_lane = CarlaDataProvider.get_map().get_waypoint_xodr(c_wp.road_id, 0, c_wp.s)
-#     for i in range(-50, 50):
-#         _wp = CarlaDataProvider.get_map().get_waypoint_xodr(c_wp.road_id, i, c_wp.s)
-#         if _wp:
-#             if i < 0:
-#                 left_lanes.append(_wp)
-#             elif i > 0:
-#                 right_lanes.append(_wp)
-#
-#     if left_lanes:
-#         left_lane_ids = [ln.lane_id for ln in left_lanes]
-#         lm_id = min(left_lane_ids)
-#         lm_lane = left_lanes[left_lane_ids.index(lm_id)]
-#         lm_lane_offset = lm_lane.lane_width / 2
-#     else:
-#         lm_lane, lm_lane_offset = ref_lane, 0
-#     lm_tr = get_offset_transform(carla.Transform(lm_lane.transform.location, lm_lane.transform.rotation),
-#                                  lm_lane_offset)
-#     distance_from_lm_lane_edge = lm_tr.location.distance(actor_loc)
-#     distance_from_lm_lane_ref_lane = lm_tr.location.distance(ref_lane.transform.location)
-#     if right_lanes:
-#         right_lane_ids = [ln.lane_id for ln in right_lanes]
-#         rm_id = max(right_lane_ids)
-#         rm_lane = right_lanes[right_lane_ids.index(rm_id)]
-#         rm_lane_offset = -rm_lane.lane_width / 2
-#     else:
-#         rm_lane, rm_lane_offset = ref_lane, -distance_from_lm_lane_ref_lane
-#     distance_from_rm_lane_edge = get_offset_transform(carla.Transform(rm_lane.transform.location,
-#                                                                       rm_lane.transform.rotation),
-#                                                       rm_lane_offset).location.distance(actor_loc)
-#     t_road = ref_lane.transform.location.distance(actor_loc)
-#     if not right_lanes or not left_lanes:
-#         closest_road_edge = min(distance_from_lm_lane_edge, distance_from_rm_lane_edge)
-#         if closest_road_edge == distance_from_lm_lane_edge:
-#             t_road = -1*t_road
-#     else:
-#         if c_wp.lane_id < 0:
-#             t_road = -1*t_road
-#
-#     return t_road
+def get_troad_from_transform(actor_transform):
+    """
+    This function finds the lateral road position (t) from actor_transform
+    """
+    actor_loc = actor_transform.location
+    c_wp = CarlaDataProvider.get_map().get_waypoint(actor_loc)
+    left_lanes, right_lanes = [], []
+    # opendrive standard: (left ==> +ve lane_id) and (right ==> -ve lane_id)
+    ref_lane = CarlaDataProvider.get_map().get_waypoint_xodr(c_wp.road_id, 0, c_wp.s)
+    for i in range(-50, 50):
+        _wp = CarlaDataProvider.get_map().get_waypoint_xodr(c_wp.road_id, i, c_wp.s)
+        if _wp:
+            if i < 0:
+                left_lanes.append(_wp)
+            elif i > 0:
+                right_lanes.append(_wp)
+
+    if left_lanes:
+        left_lane_ids = [ln.lane_id for ln in left_lanes]
+        lm_id = min(left_lane_ids)
+        lm_lane = left_lanes[left_lane_ids.index(lm_id)]
+        lm_lane_offset = lm_lane.lane_width / 2
+    else:
+        lm_lane, lm_lane_offset = ref_lane, 0
+    lm_tr = get_offset_transform(limulator.Transform(lm_lane.transform.location, lm_lane.transform.rotation),
+                                 lm_lane_offset)
+    distance_from_lm_lane_edge = lm_tr.location.distance(actor_loc)
+    distance_from_lm_lane_ref_lane = lm_tr.location.distance(ref_lane.transform.location)
+    if right_lanes:
+        right_lane_ids = [ln.lane_id for ln in right_lanes]
+        rm_id = max(right_lane_ids)
+        rm_lane = right_lanes[right_lane_ids.index(rm_id)]
+        rm_lane_offset = -rm_lane.lane_width / 2
+    else:
+        rm_lane, rm_lane_offset = ref_lane, -distance_from_lm_lane_ref_lane
+    distance_from_rm_lane_edge = get_offset_transform(limulator.Transform(rm_lane.transform.location,
+                                                                      rm_lane.transform.rotation),
+                                                      rm_lane_offset).location.distance(actor_loc)
+    t_road = ref_lane.transform.location.distance(actor_loc)
+    if not right_lanes or not left_lanes:
+        closest_road_edge = min(distance_from_lm_lane_edge, distance_from_rm_lane_edge)
+        if closest_road_edge == distance_from_lm_lane_edge:
+            t_road = -1*t_road
+    else:
+        if c_wp.lane_id < 0:
+            t_road = -1*t_road
+
+    return t_road
 
 
-# def get_distance_between_actors(current, target, distance_type="euclidianDistance", freespace=False,
-#                                 global_planner=None):
-#     """
-#     This function finds the distance between actors for different use cases described by distance_type and freespace
-#     attributes
-#     """
-#
-#     target_transform = CarlaDataProvider.get_transform(target)
-#     current_transform = CarlaDataProvider.get_transform(current)
-#     target_wp = CarlaDataProvider.get_map().get_waypoint(target_transform.location)
-#     current_wp = CarlaDataProvider.get_map().get_waypoint(current_transform.location)
-#
-#     extent_sum_x, extent_sum_y = 0, 0
-#     if freespace:
-#         if isinstance(target, (carla.Vehicle, carla.Walker)):
-#             extent_sum_x = target.bounding_box.extent.x + current.bounding_box.extent.x
-#             extent_sum_y = target.bounding_box.extent.y + current.bounding_box.extent.y
-#     if distance_type == "longitudinal":
-#         if not current_wp.road_id == target_wp.road_id:
-#             distance = 0
-#             # Get the route
-#             route = global_planner.trace_route(current_transform.location, target_transform.location)
-#             # Get the distance of the route
-#             for i in range(1, len(route)):
-#                 curr_loc = route[i][0].transform.location
-#                 prev_loc = route[i - 1][0].transform.location
-#                 distance += curr_loc.distance(prev_loc)
-#         else:
-#             distance = abs(current_wp.s - target_wp.s)
-#         if freespace:
-#             distance = distance - extent_sum_x
-#     elif distance_type == "lateral":
-#         target_t = get_troad_from_transform(target_transform)
-#         current_t = get_troad_from_transform(current_transform)
-#         distance = abs(target_t - current_t)
-#         if freespace:
-#             distance = distance - extent_sum_y
-#
-#     elif distance_type in ["cartesianDistance", "euclidianDistance"]:
-#         distance = target_transform.location.distance(current_transform.location)
-#         if freespace:
-#             distance = distance - extent_sum_x
-#     else:
-#         raise TypeError("unknown distance_type: {}".format(distance_type))
-#
-#     # distance will be negative for feeespace when there is overlap condition
-#     # truncate to 0.0 when this happens
-#     distance = 0.0 if distance < 0.0 else distance
-#
-#     return distance
+def get_distance_between_actors(current, target, distance_type="euclidianDistance", freespace=False,
+                                global_planner=None):
+    """
+    This function finds the distance between actors for different use cases described by distance_type and freespace
+    attributes
+    """
+
+    target_transform = CarlaDataProvider.get_transform(target)
+    current_transform = CarlaDataProvider.get_transform(current)
+    target_wp = CarlaDataProvider.get_map().get_waypoint(target_transform.location)
+    current_wp = CarlaDataProvider.get_map().get_waypoint(current_transform.location)
+
+    extent_sum_x, extent_sum_y = 0, 0
+    if freespace:
+        if isinstance(target, (carla.Vehicle, carla.Walker)):
+            extent_sum_x = target.bounding_box.extent.x + current.bounding_box.extent.x
+            extent_sum_y = target.bounding_box.extent.y + current.bounding_box.extent.y
+    if distance_type == "longitudinal":
+        if not current_wp.road_id == target_wp.road_id:
+            distance = 0
+            # Get the route
+            route = global_planner.trace_route(current_transform.location, target_transform.location)
+            # Get the distance of the route
+            for i in range(1, len(route)):
+                curr_loc = route[i][0].transform.location
+                prev_loc = route[i - 1][0].transform.location
+                distance += curr_loc.distance(prev_loc)
+        else:
+            distance = abs(current_wp.s - target_wp.s)
+        if freespace:
+            distance = distance - extent_sum_x
+    elif distance_type == "lateral":
+        target_t = get_troad_from_transform(target_transform)
+        current_t = get_troad_from_transform(current_transform)
+        distance = abs(target_t - current_t)
+        if freespace:
+            distance = distance - extent_sum_y
+
+    elif distance_type in ["cartesianDistance", "euclidianDistance"]:
+        distance = target_transform.location.distance(current_transform.location)
+        if freespace:
+            distance = distance - extent_sum_x
+    else:
+        raise TypeError("unknown distance_type: {}".format(distance_type))
+
+    # distance will be negative for feeespace when there is overlap condition
+    # truncate to 0.0 when this happens
+    distance = 0.0 if distance < 0.0 else distance
+
+    return distance
 
 
 # def get_same_dir_lanes(waypoint):
