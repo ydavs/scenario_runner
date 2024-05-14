@@ -31,12 +31,14 @@ import json
 import pkg_resources
 
 import limulator
+import srunner.osc2_stdlib.global_variables as GV
 
 from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.scenariomanager.scenario_manager import ScenarioManager
 from srunner.tools.osc2_helper import OSC2Helper
 from srunner.scenarios.osc2_scenario import OSC2Scenario
 from srunner.scenarioconfigs.osc2_scenario_configuration import OSC2ScenarioConfiguration
+
 
 # Version of scenario_runner
 VERSION = '0.9.13'
@@ -508,8 +510,14 @@ def main():
 
     arguments = parser.parse_args()
     # pylint: enable=line-too-long
-
+    arguments.sync=False
+    arguments.openscenario2='srunner/examples/simdaas_swerve.osc'
+    arguments.reloadWorld=False
+    arguments.output=True
     # OSC2Helper.wait_for_ego = arguments.waitForEgo
+    GV.LOGIC="gauss"
+    #GV.MU=None
+    #GV.SIGMA=None
 
     if arguments.list:
         print("Currently, only openscenario2 is supported:")

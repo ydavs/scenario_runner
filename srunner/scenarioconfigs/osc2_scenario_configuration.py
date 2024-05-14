@@ -13,6 +13,7 @@ import limulator
 import srunner.osc2_stdlib.misc_object as misc
 import srunner.osc2_stdlib.variables as variable
 import srunner.osc2_stdlib.vehicle as vehicles
+import srunner.osc2_stdlib.pedestrian as pedestrians
 from srunner.osc2.ast_manager import ast_node
 from srunner.osc2.ast_manager.ast_vistor import ASTVisitor
 from srunner.osc2_dm.physical_object import *
@@ -31,6 +32,7 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.tools.osc2_helper import OSC2Helper
 
 vehicle_type = ["Car", "Model3", "Mkz2017", "Carlacola", "Rubicon"]
+pedestrian_type=["Man1","Woman1"]
 
 
 def flat_list(list_of_lists):
@@ -112,6 +114,14 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
                         self.father_ins.add_ego_vehicles(v_ins)
                     else:
                         self.father_ins.add_other_actors(v_ins)
+                elif para_type in pedestrian_type:  
+                    ped_class = getattr(pedestrians, para_type)
+                    p_ins = ped_class()
+
+                    # TODO: 车辆配置参数解析和设置，需要解析keep语句
+                    # 车辆rolename=变量名
+                    p_ins.set_name(para_name)
+                    self.father_ins.add_other_actors(p_ins)       
                 self.father_ins.variables[para_name] = para_type
             self.father_ins.store_variable(self.father_ins.variables)
 
@@ -171,6 +181,13 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
                         self.father_ins.add_ego_vehicles(v_ins)
                     else:
                         self.father_ins.add_other_actors(v_ins)
+                    if para_type in pedestrian_type:
+                        ped_class = getattr(pedestrians, para_type)
+                        p_ins = ped_class()
+
+                        # TODO: Analyzing and setting vehicle configuration parameters requires parsing the keep statement
+                        p_ins.set_name(para_name)
+                        self.father_ins.add_other_actors(p_ins)
                 self.father_ins.variables[para_name] = para_type
             self.father_ins.store_variable(self.father_ins.variables)
 
@@ -244,6 +261,35 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
                     position_cls(*position_args, **keyword_args)
                     position_function(pos)
                     self.father_ins.ego_vehicles[0].random_location = False
+            else:
+                if hasattr(pedestrians.Pedestrian, function_name):
+                    position_args = []
+                    keyword_args = {}
+                    #actor_ins=self.father_ins.all_actors[actor_name]
+                    position_function = getattr(
+                        self.father_ins.all_actors[actor_name], function_name
+                    )
+
+                    pos = misc.WorldPosition(0, 0, 0, 0, 0, 0)
+                    position_cls = getattr(pos, "__init__")
+                    if isinstance(arguments, List):
+                        arguments = flat_list(arguments)
+                        counter=0
+                        for arg in arguments:
+                            if isinstance(arg, Tuple):
+                                if isinstance(arg[1], Physical):
+                                    keyword_args[arg[0]] = arg[1].gen_physical_value()
+                            else:
+                                if isinstance(arg, Physical):
+                                    position_args.append(arg.gen_physical_value())
+                            counter+=1
+                    else:
+                        if isinstance(arguments, Physical):
+                            position_args.append(arguments.gen_physical_value())
+                    position_cls(*position_args, **keyword_args)
+                    position_function(pos)
+                    if counter ==6:
+                        self.father_ins.all_actors[actor_name].random_location = False
 
         def visit_event_declaration(self, node: ast_node.EventDeclaration):
             event_name = node.field_name

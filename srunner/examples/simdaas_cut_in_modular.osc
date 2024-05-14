@@ -1,0 +1,29 @@
+import basic.osc
+import simdaas_lane_change_atomic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: Model3                # ego car
+    ego_vehicle: Model3               # The other car
+    
+    event start
+    event end
+    event left
+    event right
+    no_lane: int=1
+    do serial:
+        get_ahead: parallel(duration: 15s):
+            npc.drive(path) with:
+                speed(20kph)
+                lane(1, at: start) # left to right: [1..n]
+            ego_vehicle.drive(path) with:
+                speed(20kph)
+                lane(right_of: npc, at: start)
+                position(15m, behind: npc, at: start)
+                position(20m, ahead_of: npc, at: end)
+        change: parallel (duration: 15s):
+            dut.lane_change(x:1, y:left)
+            npc.drive(path)

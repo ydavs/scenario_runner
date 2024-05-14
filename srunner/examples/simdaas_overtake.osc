@@ -22,7 +22,7 @@ scenario top:
                 lane(same_as: npc, at: start)
                 position(15m, behind: npc, at: start)
                 
-        change_lane1: parallel(duration: 10s):
+        change_lane1: parallel(duration: 5s):
             npc.drive(path)
             ego_vehicle.drive(path) with:
                 # change_lane(lane_changes:[1..2], side: left)
@@ -31,7 +31,7 @@ scenario top:
         get_ahead: parallel(duration: 10s):
             npc.drive(path)
             ego_vehicle.drive(path) with:
-                position(10m, ahead_of: npc, at: end)
+                position(5m, ahead_of: npc, at: end)
         
         change_lane2: parallel(duration: 5s):
             npc.drive(path)

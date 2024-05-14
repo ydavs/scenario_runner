@@ -564,7 +564,8 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         if CarlaDataProvider._spawn_index >= len(CarlaDataProvider._spawn_points):
             print("No more spawn points to use")
             return None
-        else:
+        #else:
+        while True:
             pos = CarlaDataProvider._spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
             CarlaDataProvider._spawn_index += 1
             wp = CarlaDataProvider.get_map().get_waypoint(pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving)
@@ -573,7 +574,7 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
 
             lane = int(float(lane_num))
             if lane > len(road_lanes):
-                return None
+                continue
             else:
                 return road_lanes[lane - 1]
 

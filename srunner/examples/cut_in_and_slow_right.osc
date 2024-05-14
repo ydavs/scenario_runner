@@ -34,7 +34,7 @@ scenario dut.cut_in_and_slow:
                 speed(10kph)
 
 scenario top:
-    set_map("Town04")
+    set_map("Junction_Map1")
     min_lane: int = 2
     path_min_driving_lanes(min_lane)
 

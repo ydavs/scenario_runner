@@ -78,6 +78,51 @@ class PositionModifier(Modifier):
     def get_trigger_point(self) -> str:
         return self.args.get("at", "all")
 
+class OrientationModifier(Modifier):
+    # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])
+    def __init__(self, actor_name: str, name: str) -> None:
+        super().__init__(actor_name, name)
+
+    def get_yaw(self):
+        yaw = self.args["yaw"]
+        if isinstance(yaw, Physical):
+            return yaw
+        else:
+            print(
+                "[Error] 'yaw' parameter of PositionModifier must be 'Physical' type"
+            )
+            sys.exit(1)
+    def get_pitch(self):
+        pitch = self.args["pitch"]
+        if isinstance(pitch, Physical):
+            return pitch
+        else:
+            print(
+                "[Error] 'pitch' parameter of PositionModifier must be 'Physical' type"
+            )
+            sys.exit(1)
+    def get_roll(self):
+        roll = self.args["roll"]
+        if isinstance(roll, Physical):
+            return roll
+        else:
+            print(
+                "[Error] 'roll' parameter of PositionModifier must be 'Physical' type"
+            )
+            sys.exit(1)
+
+    def get_refer_car(self):
+        if self.args.get("ahead_of"):
+            return self.args.get("ahead_of"), "ahead_of"
+        elif self.args.get("behind"):
+            return self.args.get("behind"), "behind"
+        elif self.args.get("relative_to"):
+            return self.args.get("relative_to"), "relative_to"
+        else:
+            print("PositionModifier key error")
+
+    def get_trigger_point(self) -> str:
+        return self.args.get("at", "all")
 
 class LaneModifier(Modifier):
     # lane([[lane: ]<lane>][right_of | left_of | same_as: <car>] | [side_of: <car>, side: <av-side>][at: <event>])

@@ -1,0 +1,11 @@
+scenario dut.lane_change:         
+    ego_vehicle: Model3                # ego car
+    #npc: Rubicon               # The other car
+    x: int
+    y: event
+    event start
+    event end
+    do parallel(duration:15s):
+        npc.drive() with:
+            #lane(right_of: ego_vehicle, at:end)
+            change_lane(lane_changes:x, side: y)

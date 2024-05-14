@@ -1,0 +1,26 @@
+
+import basic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+    
+    my_junction: junction
+    road_1, road_2, road_3, road_4: road
+    jr_12, jr_34: road
+    path.roads_follow_in_junction(junction: my_junction, in_road: road_1, out_road: road_2, junction_route: jr_12)
+    path.roads_follow_in_junction(junction: my_junction, in_road: road_3, out_road: road_4, junction_route: jr_34)
+    
+    npc: Model3                # ego car
+    ego_vehicle: Model3               # The other car
+
+    event start
+    event end
+    event left
+    event right
+    do serial:
+        spawn: serial(duration:30s):
+            ego_vehicle.drive(path) with:
+                lane(1, at:start)
+                speed (20kph)

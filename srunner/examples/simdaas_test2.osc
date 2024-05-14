@@ -1,0 +1,23 @@
+import basic.osc
+import simdaas_test3.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: Model3                # ego car
+    ego_vehicle: Model3               # The other car
+    
+    event start
+    event end
+    event left
+    event right
+    do serial(duration:20s):
+        ego_vehicle.drive(path) with:
+            speed([20kph..40kph])
+            lane(1, at: start)
+        ego_vehicle.drive(path) with:
+            change_lane(lane_changes:[1..2], right: left)
+
+    

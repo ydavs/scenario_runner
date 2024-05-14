@@ -1,0 +1,29 @@
+import basic.osc
+
+type acceleration is SI(m: 1, s: -2)
+unit kphps               of acceleration is SI(m: 1, s: -1, factor: 0.277777778)
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: Model3                # ego car
+    ego_vehicle: Model3               # The other car
+
+    event start
+    event end
+    event left
+    event right
+    do serial:
+        spawn: parallel(duration:10s):
+            ego_vehicle.drive(path) with:
+                speed(30kph)
+                lane(1, at: start)
+        speedup: parallel(duration:10s):
+            ego_vehicle.drive(path) with:
+                acceleration(-2kphps)
+                % change_speed(-15kph)
+        continue: parallel(duration:10s):
+            ego_vehicle.drive(path) with:
+                keep_lane()

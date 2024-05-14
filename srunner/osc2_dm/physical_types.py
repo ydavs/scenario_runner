@@ -5,6 +5,7 @@ import sys
 from typing import List
 
 from srunner.osc2_dm.physical_object import *
+import srunner.osc2_stdlib.global_variables as GV
 
 
 class Range(object):
@@ -39,8 +40,10 @@ class Range(object):
             return False
 
     def gen_single_value(self):
-        return random.uniform(self.start, self.end)
-
+        if GV.LOGIC == "uniform":
+            return random.uniform(self.start, self.end)
+        elif GV.LOGIC == "gauss":
+            return self.start + (self.end-self.start)*random.gauss(mu=GV.MU, sigma=GV.SIGMA)
 
 class Physical(object):
     def __init__(self, num, unit):

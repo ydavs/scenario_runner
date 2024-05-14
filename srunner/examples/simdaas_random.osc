@@ -1,0 +1,60 @@
+import basic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Town04")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: Model3                # ego car
+    ego_vehicle: Model3               # The other car
+
+    event start
+    event end
+    event left
+    event right
+    do one_of:
+        cut_in: serial:
+            get_ahead: parallel(duration: 15s):
+                npc.drive(path) with:
+                    speed(20kph)
+                    lane(1, at: start) # left to right: [1..n]
+                ego_vehicle.drive(path) with:
+                    lane(right_of: npc, at: start)
+                    position(15m, behind: npc, at: start)
+                    position(20m, ahead_of: npc, at: end)
+
+            change_lane: parallel(duration: 5s):
+                npc.drive(path)
+                ego_vehicle.drive(path) with:
+                    # change_lane(lane_changes:[1..2], side:left)
+                    # change_lane(lane_changes:[1..2], side: left)
+                    lane (same_as: npc, at: end)
+
+            slow: parallel(duration: 20s):
+                npc.drive(path)
+                ego_vehicle.drive(path) with:
+                    speed(20kph)
+        
+        lane_change: serial(duration:30s):
+            spawn: parallel(duration:10s):
+                ego_vehicle.drive(path) with:
+                    speed(20kph)
+                    lane(1, at: start)
+            switch: parallel(duration:10s):
+                ego_vehicle.drive(path) with:
+                    lane(right_of: ego_vehicle, at:end)
+            continue: parallel(duration:10s):
+                ego_vehicle.drive(path) with:
+                    keep_lane()
+        
+        speeding: serial:
+            spawn: serial(duration:10s):
+                ego_vehicle.drive(path) with:
+                    speed(20kph)
+                    lane(1, at: start)
+            speedup: serial(duration:10s):
+                ego_vehicle.drive(path) with:
+                    change_speed(15kph)
+            continue: serial(duration:10s):
+                ego_vehicle.drive(path) with:
+                    keep_lane()

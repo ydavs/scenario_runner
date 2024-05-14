@@ -33,6 +33,7 @@ from srunner.osc2_stdlib.modifier import (
     AccelerationModifier,
     ChangeLaneModifier,
     ChangeSpeedModifier,
+    OrientationModifier,
     LaneModifier,
     PositionModifier,
     SpeedModifier,
@@ -820,6 +821,25 @@ class OSC2Scenario(BasicScenario):
                             keyword_args[arguments[0]] = arguments[1]
                         elif isinstance(arg, Physical):
                             keyword_args["distance"] = arguments
+                        else:
+                            raise NotImplementedError(
+                                f"no implentment argument of {modifier_name}"
+                            )
+
+                        modifier_ins.set_args(keyword_args)
+
+                        location_modifiers.append(modifier_ins)
+                    
+                    elif modifier_name == "orientation":
+                        modifier_ins = OrientationModifier(actor, modifier_name)
+                        keyword_args = {}
+                        if isinstance(arguments, list):
+                            arguments = OSC2Helper.flat_list(arguments)
+                            for arg in arguments:
+                                if isinstance(arg, tuple):
+                                    keyword_args[arg[0]] = arg[1]
+                        elif isinstance(arguments, tuple):
+                            keyword_args[arguments[0]] = arguments[1]
                         else:
                             raise NotImplementedError(
                                 f"no implentment argument of {modifier_name}"

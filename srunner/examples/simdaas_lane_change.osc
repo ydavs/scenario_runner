@@ -14,12 +14,12 @@ scenario top:
     event right
     do serial(duration:30s):
         spawn: parallel(duration:10s):
-            ego_vehicle.drive(path) with:
+            ego_vehicle.drive() with:
                 speed(20kph)
                 lane(1, at: start)
         switch: parallel(duration:10s):
-            ego_vehicle.drive(path) with:
+            ego_vehicle.drive() with:
                 lane(right_of: ego_vehicle, at:end)
         continue: parallel(duration:10s):
-            ego_vehicle.drive(path) with:
+            ego_vehicle.drive() with:
                 keep_lane()

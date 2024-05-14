@@ -5,8 +5,8 @@ scenario top:
     path.set_map("Town04")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
-    ego_vehicle: A2                # ego car
-    npc: Carlacola               # The other car
+    ego_vehicle: A2              # ego car
+    npc: Firetruck            # The other car
 
     event start
     event end
