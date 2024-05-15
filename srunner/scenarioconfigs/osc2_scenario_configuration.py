@@ -1,6 +1,6 @@
 
 """
-Parse the OSC2 scenario description file, configure parameters based on type and keep constraints, 
+Parse the OSC2 scenario description file, configure parameters based on type and keep constraints,
 generate relevant type objects in the standard library, and set parameters
 
 """
@@ -14,6 +14,7 @@ import srunner.osc2_stdlib.misc_object as misc
 import srunner.osc2_stdlib.variables as variable
 import srunner.osc2_stdlib.vehicle as vehicles
 import srunner.osc2_stdlib.pedestrian as pedestrians
+import srunner.osc2_dm.stationary_object as stationary
 from srunner.osc2.ast_manager import ast_node
 from srunner.osc2.ast_manager.ast_vistor import ASTVisitor
 from srunner.osc2_dm.physical_object import *
@@ -31,8 +32,10 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 # OSC2
 from srunner.tools.osc2_helper import OSC2Helper
 
-vehicle_type = ["Car", "Model3", "Mkz2017", "Carlacola", "Rubicon"]
-pedestrian_type=["Man1","Woman1"]
+vehicle_type = ["Car", "Model3", "Mkz2017", "Rubicon", "Mercedes", "Harley", "Creta", "AudiEtron",
+                "OlaScooter", "OlaScooterLadder", "OlaScooterCylinder", "AshokTruck" ,"AshokTruckLoaded"]
+pedestrian_type = ["Man1", "Woman1"]
+static_type = ["Barrel", "ConcreteBarrier", "TrafficCone", "Newspaper", "Cow"]
 
 
 def flat_list(list_of_lists):
@@ -114,14 +117,22 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
                         self.father_ins.add_ego_vehicles(v_ins)
                     else:
                         self.father_ins.add_other_actors(v_ins)
-                elif para_type in pedestrian_type:  
+                elif para_type in pedestrian_type:
                     ped_class = getattr(pedestrians, para_type)
                     p_ins = ped_class()
 
                     # TODO: 车辆配置参数解析和设置，需要解析keep语句
                     # 车辆rolename=变量名
                     p_ins.set_name(para_name)
-                    self.father_ins.add_other_actors(p_ins)       
+                    self.father_ins.add_other_actors(p_ins)
+                elif para_type in static_type:  ###################################
+                    vehicle_class = getattr(stationary, para_type)
+                    v_ins = vehicle_class()
+
+                    # TODO: 车辆配置参数解析和设置，需要解析keep语句
+                    # 车辆rolename=变量名
+                    v_ins.set_name(para_name)
+                    self.father_ins.add_other_actors(v_ins)  ################################
                 self.father_ins.variables[para_name] = para_type
             self.father_ins.store_variable(self.father_ins.variables)
 
@@ -181,13 +192,20 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
                         self.father_ins.add_ego_vehicles(v_ins)
                     else:
                         self.father_ins.add_other_actors(v_ins)
-                    if para_type in pedestrian_type:
-                        ped_class = getattr(pedestrians, para_type)
-                        p_ins = ped_class()
+                if para_type in pedestrian_type:
+                    ped_class = getattr(pedestrians, para_type)
+                    p_ins = ped_class()
 
-                        # TODO: Analyzing and setting vehicle configuration parameters requires parsing the keep statement
-                        p_ins.set_name(para_name)
-                        self.father_ins.add_other_actors(p_ins)
+                    # TODO: Analyzing and setting vehicle configuration parameters requires parsing the keep statement
+                    p_ins.set_name(para_name)
+
+                if para_type in static_type:  ###################################################
+                    vehicle_class = getattr(stationary, para_type)
+                    v_ins = vehicle_class()
+
+                    # TODO: Analyzing and setting vehicle configuration parameters requires parsing the keep statement
+                    v_ins.set_name(para_name)
+                    self.father_ins.add_other_actors(v_ins)  ###########################################
                 self.father_ins.variables[para_name] = para_type
             self.father_ins.store_variable(self.father_ins.variables)
 

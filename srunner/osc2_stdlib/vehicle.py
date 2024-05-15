@@ -9,7 +9,7 @@ from srunner.tools.osc2_helper import OSC2Helper
 
 class Vehicle:
     def __init__(self) -> None:
-        self.model = "vehicle.*"  # vehicle.tesla.model3
+        self.model = "Mercedes"  # vehicle.tesla.model3
         self.rolename = "scenario"  # variable name
         self.position = misc.Position()  # doesn't depend on the position of
         self.transform = limulator.Transform()  # initial position
@@ -83,22 +83,102 @@ class Car(Vehicle):
 class Model3(Car):
     def __init__(self) -> None:
         super().__init__()
-        self.set_model("vehicle.tesla.model3")
+        self.set_model("Tesla")
 
 
 class Mkz2017(Car):
     def __init__(self) -> None:
         super().__init__()
-        self.set_model("vehicle.lincoln.mkz2017")
-
-
-class Carlacola(Car):
-    def __init__(self) -> None:
-        super().__init__()
-        self.set_model("vehicle.carlamotors.carlacola")
+        self.set_model("LincolnMKZ2017")
 
 
 class Rubicon(Car):
     def __init__(self) -> None:
         super().__init__()
-        self.set_model("vehicle.jeep.wrangler_rubicon")
+        self.set_model("Jeep")
+
+
+class Mercedes(Car): # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("Mercedes")
+
+class AudiEtron(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("AudiEtron")
+
+class AudiA2(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("AudiA2")
+
+class CitroenC3(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("CitroenC3")
+class DodgeCgarge(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("DodgeCgarge")
+class LinkcoInMKZ2017(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("LincoInMKZ2017")
+
+class NissanMicra(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("NissanMicra")
+
+
+class NissanPatrol(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("NissanPatrol")
+
+
+class Creta(Car): # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("Creta")
+
+
+class AshokTruck(Car): # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("AshokTruck")
+
+class AshokTruckLoaded(Car): # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("AshokTruckLoaded")
+
+
+class TwoWheelerVehicle(Vehicle):
+    def __init__(self) -> None:
+        super().__init__()
+
+
+class Harley(TwoWheelerVehicle): # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("Harley")
+
+
+class OlaScooter(TwoWheelerVehicle):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("OlaScooter")
+
+class OlaScooterLadder(TwoWheelerVehicle):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("OlaScooterLadder")
+
+class OlaScooterCylinder(TwoWheelerVehicle):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("OlaScooterCylinder")
+
+ # todo: complete this thing
