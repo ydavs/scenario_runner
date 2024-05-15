@@ -2,7 +2,7 @@ import basic.osc
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Town04")    # specify map to use in this test
+    path.set_map("Junction_Map1")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
     npc: Model3                # ego car
@@ -19,15 +19,15 @@ scenario top:
                 lane(1, at: start) # left to right: [1..n]
             ego_vehicle.drive(path) with:
                 lane(right_of: npc, at: start)
-                position(15m, behind: npc, at: start)
+                position(5m, behind: npc, at: start)
                 position(20m, ahead_of: npc, at: end)
 
-        change_lane: parallel(duration: 5s):
+        change_lane: parallel(duration: 15s):
             npc.drive(path)
             ego_vehicle.drive(path) with:
                 # change_lane(lane_changes:[1..2], side:left)
-                # change_lane(lane_changes:[1..2], side: left)
-                lane (same_as: npc, at: end)
+                change_lane(lane_changes:1, side: left)
+                # lane (same_as: npc, at: end)
 
         slow: parallel(duration: 20s):
             npc.drive(path)
