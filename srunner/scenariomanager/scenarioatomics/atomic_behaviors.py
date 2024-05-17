@@ -2737,7 +2737,7 @@ class WaypointFollower(AtomicBehavior):
         self._blackboard_queue_name = blackboard_queue_name
         if blackboard_queue_name is not None:
             self._queue = Blackboard().get(blackboard_queue_name)
-        self._args_lateral_dict = {'K_P': 1.0, 'K_D': 0.01, 'K_I': 0.0, 'dt': 0.05}
+        self._args_lateral_dict = {'K_P': 4.0, 'K_D': 0.5, 'K_I': 0.01, 'dt': 0.05}
         self._avoid_collision = avoid_collision
         self._unique_id = 0
 
