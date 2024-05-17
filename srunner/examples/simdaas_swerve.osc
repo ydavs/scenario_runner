@@ -27,5 +27,5 @@ scenario top:
             ego_vehicle.drive(path)
         swerve: parallel(duration:10s):
             npc.drive(path) with:
-                lane(same_as:ego_vehicle, at: end)
+                #lane(same_as:ego_vehicle, at: end)
             ego_vehicle.drive(path)

@@ -2,11 +2,11 @@ import basic.osc
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Town04")    # specify map to use in this test
+    path.set_map("Highway_Map_LHD")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
-    ego_vehicle: A2              # ego car
-    npc: Firetruck            # The other car
+    ego_vehicle: AudiEtron              # ego car
+    npc: AshokTruck
 
     event start
     event end
@@ -25,8 +25,8 @@ scenario top:
         change_lane1: parallel(duration: 5s):
             ego_vehicle.drive(path)
             npc.drive(path) with:
-                # change_lane(lane_changes:[1..2], side: left)
-                lane (right_of: ego_vehicle, at: end)
+                change_lane(lane_changes:1, side: right)
+                #lane (right_of: ego_vehicle, at: end)
         
         get_ahead: parallel(duration: 10s):
             ego_vehicle.drive(path)
@@ -36,8 +36,8 @@ scenario top:
         change_lane2: parallel(duration: 5s):
             ego_vehicle.drive(path)
             npc.drive(path) with:
-                # change_lane(lane_changes:[1..2], side: left)
-                lane (same_as: ego_vehicle, at: end)
+                change_lane(lane_changes:1, side: left)
+                #lane (same_as: ego_vehicle, at: end)
                 speed(20kph)
         
         continue: parallel(duration: 20s):

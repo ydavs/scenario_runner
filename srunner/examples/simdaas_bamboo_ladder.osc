@@ -2,21 +2,21 @@ import basic.osc
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Junction_Map1")    # specify map to use in this test
+    path.set_map("Highway_Map_LHD")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
     ego_vehicle: Model3
-    npc: Model3                 
+    npc: OlaScooterLadder                 
 
     event start
     event end
     event left
     event right
-    do parallel(duration:30s):
+    do parallel(duration:40s):
         ego_vehicle.drive(path) with:
-            speed(30kph)
-            lane(1, at: start)
+            speed(23kph)
+            lane(2, at: start)
         npc.drive() with:
-            speed(25kph)
+            speed(20kph)
             lane(right_of:ego_vehicle, at: start)
-            position(40m, ahead_of:ego_vehicle, at:start)
+            position(20m, ahead_of:ego_vehicle, at:start)

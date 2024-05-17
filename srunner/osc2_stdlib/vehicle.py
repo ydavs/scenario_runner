@@ -155,6 +155,18 @@ class AshokTruckLoaded(Car): # not working
         self.set_model("AshokTruckLoaded")
 
 
+class Ambulance(Car):  # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("Ambulance")
+
+
+class Auto(Car):  # not working
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("Auto")
+
+
 class TwoWheelerVehicle(Vehicle):
     def __init__(self) -> None:
         super().__init__()

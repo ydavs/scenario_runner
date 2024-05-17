@@ -5,10 +5,11 @@ scenario top:
     path.set_map("Junction_Map1")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
-    npc: Model3
-    npc2: Model3
-    npc3: Model3                # ego car
-    ego_vehicle: Model3               # The other car
+    npc: OlaScooterCylinder
+    npc2: OlaScooter
+    npc3: OlaScooter
+    npc4: OlaScooterCylinder                # ego car
+    ego_vehicle: AudiEtron               # The other car
 
     event start
     event end
@@ -17,17 +18,21 @@ scenario top:
     do serial:
         spawn: parallel(duration:20s):
             ego_vehicle.drive(path) with:
-                speed(30kph)
+                speed(20kph)
                 lane(1, at: start)
             npc.drive(path) with:
-                speed(30kph)
+                speed(21kph)
                 lane(right_of:ego_vehicle, at: start)
-                position(1m, ahead_of:ego_vehicle, at: start)
+                position(20m, ahead_of:ego_vehicle, at: start)
+            npc4.drive(path) with:
+                speed(20kph)
+                lane(same_as:ego_vehicle, at: start)
+                position(20m, ahead_of:ego_vehicle, at: start)   
             npc2.drive(path) with:
-                speed(30kph)
+                speed(19kph)
                 lane(right_of:npc, at: start)
                 position(2m, behind:npc, at: start)
             npc3.drive(path) with:
-                speed(30kph)
+                speed(22kph)
                 lane(right_of:npc2, at: start)
                 position(1m, ahead_of:npc2, at: start)

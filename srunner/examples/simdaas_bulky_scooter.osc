@@ -6,17 +6,17 @@ scenario top:
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
     ego_vehicle: Model3
-    npc: Model3                 
+    npc: OlaScooterCylinder                 
 
     event start
     event end
     event left
     event right
-    do parallel(duration:30s):
+    do parallel(duration:40s):
         ego_vehicle.drive(path) with:
-            speed(30kph)
+            speed(20kph)
             lane(1, at: start)
         npc.drive() with:
-            speed(25kph)
+            speed(20kph)
             lane(right_of:ego_vehicle, at: start)
-            position(40m, ahead_of:ego_vehicle, at:start)
+            position(20m, ahead_of:ego_vehicle, at:start)

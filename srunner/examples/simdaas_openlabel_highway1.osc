@@ -1,0 +1,60 @@
+import basic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_LHD")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    ego_vehicle: Model3
+    npc: Model3
+    npc2: Rubicon                 
+
+    event start
+    event end
+    event left
+    event right
+    do serial:
+        spawn: parallel(duration: 5s):
+            npc.drive(path) with:
+                speed(40kph)
+                lane(4, at: start) # left to right: [1..n]
+            ego_vehicle.drive(path) with:
+                lane(same_as:npc, at:start)
+                position(65m, behind:npc, at:start)
+                speed(50kph)
+            npc2.drive(path) with:
+                speed(40kph)
+                lane(left_of:npc, at:start)
+                position(5m, behind:npc, at:start)
+        gapClose: parallel(duration:5s):
+            npc.drive(path)
+            npc2.drive(path)
+            ego_vehicle.drive(path) with:
+                position(10m, behind:npc, at:end)
+                speed(40kph)
+        accel: parallel(duration: 1s):
+            npc.drive(path)
+            npc2.drive(path) with:
+                speed(70kph)
+            ego_vehicle.drive(path) with:
+                speed(40kph)
+                #change_lane(lane_changes:1, side: left)
+                #speed(70kph)
+        switch: parallel(duration:3s):
+            npc.drive(path)
+            npc2.drive(path) with:
+                speed(70kph)
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1, side: left)
+        accel2: parallel(duration:2s):
+            npc.drive(path)
+            npc2.drive(path) with:
+                speed(40kph)
+            ego_vehicle.drive(path) with:
+                speed(57kph)
+                #change_lane(lane_changes:1, side: right)
+        switch2: parallel(duration:4s):
+            npc.drive(path)
+            npc2.drive(path)
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1, side: right)

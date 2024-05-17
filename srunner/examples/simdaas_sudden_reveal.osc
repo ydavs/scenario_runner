@@ -2,10 +2,10 @@ import basic.osc
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Junction_Map1")    # specify map to use in this test
+    path.set_map("Highway_Map_LHD")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
-    npc1: Model3
+    npc1: AshokTruck
     npc2: Model3                # ego_vehicle car
     ego_vehicle: Model3               # The other car
 
@@ -17,11 +17,11 @@ scenario top:
         spawn: parallel(duration:10s):
             ego_vehicle.drive(path) with:
                 lane(1, at: start) # left to right: [1..n]
-                speed(20kph)    
+                speed(22kph)    
             npc1.drive(path) with:
                 speed(20kph)
                 lane(right_of: ego_vehicle, at: start)
-                position(7m, ahead_of: ego_vehicle, at: start)
+                position(15m, ahead_of: ego_vehicle, at: start)
             npc2.drive(path) with:
                 speed(20kph)
                 lane(right_of: npc1, at: start)

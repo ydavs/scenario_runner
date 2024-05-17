@@ -39,7 +39,7 @@ scenario top:
                 speed(30kph)
                 change_lane(lane_changes:1, side: right)   
                 #lane(same_as: npc2, at: end)
-        stabilize: parallel(duration:5s):
+        stabilize: parallel(duration:10s):
             npc1.drive()
             npc2.drive()
             ego_vehicle.drive() with:

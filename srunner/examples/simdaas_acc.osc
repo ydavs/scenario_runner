@@ -2,8 +2,8 @@ import basic.osc
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Town04")    # specify map to use in this test
-    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+    path.set_map("Highway_Map_LHD")    # specify map to use in this test
+    path.path_min_driving_lanes(1)         # Path should have at least two lanes
 
     npc: Model3                # ego car
     ego_vehicle: Model3               # The other car
@@ -13,22 +13,22 @@ scenario top:
     event left
     event right
     do serial:
-        spawn: parallel(duration: 15s):
+        spawn: parallel(duration: 6s):
             npc.drive(path) with:
-                speed(30kph)
+                speed(60kph)
                 lane(1, at: start) # left to right: [1..n]
             ego_vehicle.drive(path) with:
-                speed(30kph)
+                speed(70kph)
                 lane(same_as: npc, at: start)
                 position(20m, behind: npc, at: start)
-        brake: parallel(duration:15s):
+        brake: parallel(duration:7s):
             npc.drive(path) with:
                 #change_lane(lane_changes:[1], side: right)
                 speed(15kph)
             ego_vehicle.drive(path) with:
                 #position(20m, behind: npc, at: end)
                 speed(15kph)
-        speed_up: parallel(duration:15s):
+        speed_up: parallel(duration:10s):
             npc.drive(path) with:
                 #change_lane(lane_changes:[1], side: left)
                 speed(45kph)

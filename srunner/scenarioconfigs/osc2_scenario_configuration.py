@@ -33,9 +33,10 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 from srunner.tools.osc2_helper import OSC2Helper
 
 vehicle_type = ["Car", "Model3", "Mkz2017", "Rubicon", "Mercedes", "Harley", "Creta", "AudiEtron",
-                "OlaScooter", "OlaScooterLadder", "OlaScooterCylinder", "AshokTruck" ,"AshokTruckLoaded"]
+                "OlaScooter", "OlaScooterLadder", "OlaScooterCylinder", "AshokTruck" ,"AshokTruckLoaded", "Ambulance",
+                "Auto"]
 pedestrian_type = ["Man1", "Woman1"]
-static_type = ["Barrel", "ConcreteBarrier", "TrafficCone", "Newspaper", "Cow"]
+static_type = ["Barrel", "ConcreteBarrier", "TrafficCone", "Newspaper", "Cow", "Cow2", "Cow3", "Doberman", "Terrier"]
 
 
 def flat_list(list_of_lists):
