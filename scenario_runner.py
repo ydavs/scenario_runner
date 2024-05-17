@@ -511,7 +511,7 @@ def main():
     arguments = parser.parse_args()
     # pylint: enable=line-too-long
     arguments.sync=False
-    arguments.openscenario2='srunner/examples/simdaas_sudden_reveal.osc'
+    arguments.openscenario2='srunner/examples/simdaas_cut_out.osc'
     arguments.reloadWorld=False
     arguments.output=True
     # OSC2Helper.wait_for_ego = arguments.waitForEgo

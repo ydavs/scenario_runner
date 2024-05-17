@@ -403,10 +403,10 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
         if end_lane_wp and car_lane_wp:
             end_lane_id = end_lane_wp.lane_id
             end_lane = None
-            if end_lane_id == car_lane_wp.get_left_lane().lane_id:
+            if car_lane_wp.get_left_lane() is not None and end_lane_id == car_lane_wp.get_left_lane().lane_id:
                 direction = "left"
                 end_lane = car_lane_wp.get_left_lane()
-            elif end_lane_id == car_lane_wp.get_right_lane().lane_id:
+            elif car_lane_wp.get_right_lane() is not None and end_lane_id == car_lane_wp.get_right_lane().lane_id:
                 direction = "right"
                 end_lane = car_lane_wp.get_right_lane()
             else:
