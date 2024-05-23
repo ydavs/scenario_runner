@@ -29,6 +29,8 @@ import sys
 import time
 import json
 import pkg_resources
+import srunner.osc2_stdlib.global_variables as gv
+import numpy as np
 
 import limulator
 import srunner.osc2_stdlib.global_variables as GV
@@ -38,6 +40,7 @@ from srunner.scenariomanager.scenario_manager import ScenarioManager
 from srunner.tools.osc2_helper import OSC2Helper
 from srunner.scenarios.osc2_scenario import OSC2Scenario
 from srunner.scenarioconfigs.osc2_scenario_configuration import OSC2ScenarioConfiguration
+from srunner.osc2_stdlib.path import Path as p
 
 
 # Version of scenario_runner
@@ -210,6 +213,9 @@ class ScenarioRunner(object):
         """
         Spawn or update the ego vehicles
         """
+
+        # Setting minimum driving lanes in carla data provider
+        CarlaDataProvider._min_driving_lanes = p.min_driving_lanes
 
         if not self._args.waitForEgo:
             for vehicle in ego_vehicles:
@@ -434,7 +440,6 @@ class ScenarioRunner(object):
             return False
 
         config = OSC2ScenarioConfiguration(self._args.openscenario2, self.client)
-
         result = self._load_and_run_scenario(config)
         self._cleanup()
 
@@ -507,8 +512,13 @@ def main():
     parser.add_argument('--randomize', action="store_true", help='Scenario parameters are randomized')
     parser.add_argument('--repetitions', default=1, type=int, help='Number of scenario executions')
     parser.add_argument('--waitForEgo', action="store_true", help='Connect the scenario to an existing ego vehicle')
+    parser.add_argument('--positionSeed', default=0, type=int, help='Position seed selected for the scenario execution')
 
     arguments = parser.parse_args()
+    arguments.sync=False
+    arguments.openscenario2='srunner/examples/change_lane.osc'
+    arguments.reloadWorld=False
+    arguments.output=True
     # pylint: enable=line-too-long
     # OSC2Helper.wait_for_ego = arguments.waitForEgo
     GV.LOGIC="gauss"
@@ -523,30 +533,6 @@ def main():
     if not arguments.openscenario2:
         print("Only openscenario2 is supported. Please specify an openscenario2 file.")
         return 1
-
-    # if not arguments.scenario and not arguments.openscenario and not arguments.route and not arguments.openscenario2:
-    #     print("Please specify either a scenario or use the route mode\n\n")
-    #     parser.print_help(sys.stdout)
-    #     return 1
-
-    # if arguments.route and (arguments.openscenario or arguments.scenario):
-    #     print("The route mode cannot be used together with a scenario (incl. OpenSCENARIO)'\n\n")
-    #     parser.print_help(sys.stdout)
-    #     return 1
-
-    # if arguments.agent and (arguments.openscenario or arguments.scenario):
-    #     print("Agents are currently only compatible with route scenarios'\n\n")
-    #     parser.print_help(sys.stdout)
-    #     return 1
-
-    # if arguments.openscenarioparams and not arguments.openscenario:
-    #     print("WARN: Ignoring --openscenarioparams when --openscenario is not specified")
-
-    # if arguments.route:
-    #     arguments.reloadWorld = True
-
-    # if arguments.agent:
-    #     arguments.sync = True
 
     scenario_runner = None
     result = True
