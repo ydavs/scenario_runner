@@ -90,5 +90,4 @@ if __name__ == "__main__":
             if arg_value is True:
                 command += f"--{arg_name} "
         command += f"--positionSeed {i}"
-        print(command)
         subprocess.run(command, check=True)
