@@ -515,10 +515,7 @@ def main():
     parser.add_argument('--positionSeed', default=0, type=int, help='Position seed selected for the scenario execution')
 
     arguments = parser.parse_args()
-    arguments.sync=False
-    arguments.openscenario2='srunner/examples/change_lane.osc'
-    arguments.reloadWorld=False
-    arguments.output=True
+    GV.SEED = arguments.positionSeed
     # pylint: enable=line-too-long
     # OSC2Helper.wait_for_ego = arguments.waitForEgo
     GV.LOGIC="gauss"
