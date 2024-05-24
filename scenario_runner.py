@@ -510,10 +510,6 @@ def main():
 
     arguments = parser.parse_args()
     # pylint: enable=line-too-long
-    arguments.sync=False
-    arguments.openscenario2='srunner/examples/simdaas_openlabel_three_vehicle.osc'
-    arguments.reloadWorld=False
-    arguments.output=True
     # OSC2Helper.wait_for_ego = arguments.waitForEgo
     GV.LOGIC="gauss"
     #GV.MU=None
