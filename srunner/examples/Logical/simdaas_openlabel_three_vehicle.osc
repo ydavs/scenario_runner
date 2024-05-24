@@ -21,11 +21,11 @@ scenario top:
             ego_vehicle.drive() with:
                 speed(30kph)
                 lane(same_as:npc2, at: start)
-                position(110m, behind: npc2, at: start)
+                position([110m..130m], behind: npc2, at: start)
             npc1.drive() with:
-                speed(30kph)
+                speed([30kph..35kph])
                 lane(same_as:npc2, at: start)
-                position(80m, behind: npc2, at: start)  
+                position([70m..80m], behind: npc2, at: start)  
                 
         cut_out: parallel(duration:6s):
             npc1.drive() with:

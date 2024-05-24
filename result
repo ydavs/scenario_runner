@@ -48,34 +48,37 @@ actor Barrel
 scenario top:
     path: Path                      # A path in the map
     path.set_map("Highway_Map_Light")    # specify map to use in this test
-    path.path_min_driving_lanes(2)         # Path should have at least two lanes
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
-    npc1: Model3                # ego car
-    ego_vehicle: Model3               # The other car
+    ego_vehicle: Model3                # ego car
+    npc1: Rubicon  
+    npc2: Model3             # The other car
 
     event start
     event end
     event left
     event right
-    do serial:
-        spawn: parallel(duration: 7s):
-            npc1.drive(path) with:
-                speed(40kph)
-                lane(1, at: start) # left to right: [1..n]
-            ego_vehicle.drive(path) with:
-                speed(42kph)
-                lane(same_as: npc1, at: start)
-                position(20m, behind: npc1, at: start)
-
-        change_lane: parallel(duration: 5s):
-            npc1.drive(path)
-            ego_vehicle.drive(path) with:
-                # change_lane(lane_changes:[1..2], side:left)
-                #change_lane(lane_changes:1, side: right)
-                lane(right_of: npc1, at: end)
+    do serial(duration:30s):
+        spawn: parallel(duration:7s):
+            npc2.drive() with:
+                speed(1kph)
+                lane(2, at: start)
+            ego_vehicle.drive() with:
+                speed(30kph)
+                lane(same_as:npc2, at: start)
+                position(110m, behind: npc2, at: start)
+            npc1.drive() with:
+                speed(30kph)
+                lane(same_as:npc2, at: start)
+                position(80m, behind: npc2, at: start)  
                 
-        slow: parallel(duration: 10s):
-            npc1.drive(path)
-            ego_vehicle.drive(path) with:
-                position(5m, ahead_of: npc1, at: end)
-                speed(60kph)
+        cut_out: parallel(duration:6s):
+            npc1.drive() with:
+                lane(left_of: npc2, at: end)
+            ego_vehicle.drive()
+            npc2.drive()
+        brake: parallel(duration:10s):
+            ego_vehicle.drive() with:
+                speed(1kph)
+            npc1.drive()
+            npc2.drive()

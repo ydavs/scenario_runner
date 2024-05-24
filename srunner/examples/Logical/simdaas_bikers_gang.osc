@@ -1,0 +1,38 @@
+import basic.osc
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Junction_Map1")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
+
+    npc: OlaScooterCylinder
+    npc2: OlaScooter
+    npc3: OlaScooter
+    npc4: OlaScooterCylinder                # ego car
+    ego_vehicle: AudiEtron               # The other car
+
+    event start
+    event end
+    event left
+    event right
+    do serial:
+        spawn: parallel(duration:20s):
+            ego_vehicle.drive(path) with:
+                speed(20kph)
+                lane(1, at: start)
+            npc.drive(path) with:
+                speed([21kph..27kph])
+                lane(right_of:ego_vehicle, at: start)
+                position([20m..25m], ahead_of:ego_vehicle, at: start)
+            npc4.drive(path) with:
+                speed(20kph)
+                lane(same_as:ego_vehicle, at: start)
+                position([20m..25m], ahead_of:ego_vehicle, at: start)   
+            npc2.drive(path) with:
+                speed(19kph)
+                lane(right_of:npc, at: start)
+                position([2m..6m], behind:npc, at: start)
+            npc3.drive(path) with:
+                speed([22kph..30kph])
+                lane(right_of:npc2, at: start)
+                position([1m..5m], ahead_of:npc2, at: start)
