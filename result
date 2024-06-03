@@ -45,112 +45,37 @@ actor Barrel
 
 #import basic.osc
 
+# tag::library-physical-angle[]
+type angle is SI(rad: 1)
+unit degree of angle is SI(rad: 1, factor: 57.295779513)
+unit deg    of angle is SI(rad: 1, factor: 57.295779513)
+unit radian of angle is SI(rad: 1, factor: 1)
+unit rad    of angle is SI(rad: 1, factor: 1)
+# end::library-physical-angle[]
+
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Highway_Map_LHD")    # specify map to use in this test
+    path.set_map("Town04")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
-
-    ego_vehicle: Model3
-    npc: Mkz2017
-    npc2: Model3
-    npc3: AshokTruck
-    npc4: AshokTruck
-    npc5: AshokTruck
-    npc6: Creta
-    npc7: OlaScooter
-    npc8: AshokTruck
-    npc9: OlaScooter                
+    npcone: Rubicon
+    #npcone.set_position(x:255.0m, y:-160.7m, z:-0.15m,pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
+    npctwo: OlaScooter
+    npctwo.set_position(x:251.0m, y:-190.7m, z:2.0m, pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
+    ego_vehicle: Model3             # The other car
+    ego_vehicle.set_position(x:255.0m, y:-214.7m, z:0.0m, pitch:0.0rad, yaw:88.4rad, roll:0.0rad)
 
     event start
     event end
     event left
     event right
     do serial:
-        spawn: parallel(duration: 7s):
-            npc.drive(path) with:
-                speed(35kph)
-                lane(4, at: start) # left to right: [1..n]
-            npc2.drive(path) with:
-                speed(35kph)
-                lane(same_as:npc, at:start)
-                position(15m, behind:npc, at:start)
-            npc3.drive(path) with:
-                lane(left_of:npc, at:start)
-                position(15m, ahead_of:npc, at:start)
-                speed(50kph)
-            npc4.drive(path) with:
-                speed(50kph)
-                lane(left_of:npc, at:start)
-                position(1m, behind:npc, at:start)
-            npc5.drive(path) with:
-                speed(55kph)
-                lane(left_of:npc, at:start)
-                position(35m, ahead_of:npc, at:start)
-            npc6.drive(path) with:
-                speed(40kph)
-                lane(same_as:npc, at:start)
-                position(15m, ahead_of:npc, at:start)
+        spawn: parallel(duration: 45s):
             ego_vehicle.drive(path) with:
-                speed(55kph)
-                lane(left_of:npc, at:start)
-                position(60m, behind:npc, at:start)
-            npc7.drive(path) with:
-                speed(30kph)
-                lane(left_of:ego_vehicle, at:start)
-                position(15m, ahead_of:ego_vehicle, at:start)
-            npc8.drive(path) with:
-                speed(55kph)
-                lane(left_of:ego_vehicle, at:start)
-                position(140m, ahead_of:ego_vehicle, at:start)
-            npc9.drive(path) with:
-                speed(55kph)
-                lane(left_of:npc8, at:start)
-                position(15m, behind:npc8, at:start)
-                
-        switch: parallel(duration:2s):
-            npc.drive(path)
-            npc2.drive(path)
-            npc3.drive(path)
-            npc4.drive(path)
-            npc5.drive(path)
-            npc6.drive(path)
-            npc7.drive(path)
-            npc8.drive(path)
-            ego_vehicle.drive(path) with:
-                change_lane(lane_changes:1,side:left)
-                speed(90kph)  
-        continue: parallel(duration:4.75s):
-            npc.drive(path)
-            npc2.drive(path)
-            npc3.drive(path)
-            npc4.drive(path)
-            npc5.drive(path)
-            npc6.drive(path)
-            npc7.drive(path)
-            npc8.drive(path)
-            ego_vehicle.drive(path) with:
-                speed(90kph)
-        switch 2: parallel(duration:2s):
-            npc.drive(path)
-            npc2.drive(path)
-            npc3.drive(path)
-            npc4.drive(path)
-            npc5.drive(path)
-            npc6.drive(path)
-            npc7.drive(path)
-            npc8.drive(path)
-            ego_vehicle.drive(path) with:
-                change_lane(lane_changes:1,side:right)
-                speed(90kph)
-        continue: parallel(duration:4.75s):
-            npc.drive(path)
-            npc2.drive(path)
-            npc3.drive(path)
-            npc4.drive(path)
-            npc5.drive(path)
-            npc6.drive(path)
-            npc7.drive(path)
-            npc8.drive(path)
-            ego_vehicle.drive(path) with:
-                speed(90kph)
-
+                speed(5kph)
+                #lane(1, at: start)
+                #position(30m, behind: npc, at: start)
+            npcone.walk(path) with:
+                #speed(5kph)
+                #lane(same_as:ego_vehicle, at: start) # left to right: [1..n]
+                position(10m, ahead_of: ego_vehicle, at: start)
+                orientation(yaw:0.0rad, pitch:90.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)

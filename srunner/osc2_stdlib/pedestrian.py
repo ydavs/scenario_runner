@@ -12,7 +12,7 @@ class Pedestrian:
         self.model = model
         self.rolename = "scenario"  # variable name
         self.position = misc.Position()  # doesn't depend on the position of
-        self.transform = carla.Transform()  # initial position
+        #self.transform = carla.Transform()  # initial position 
         self.speed = 0  # the initial speed, m/s，default 0
         self.autopilot = False
         self.random_location = (
