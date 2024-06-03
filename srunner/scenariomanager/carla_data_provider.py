@@ -784,6 +784,11 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         CarlaDataProvider.register_actor(actor, spawn_point)
         return actor
 
+    @staticmethod
+    def request_new_sensor(sensor_description):
+        sensor = CarlaDataProvider._world.spawn_sensor(sensor_description, sensor_description.transform, -1)
+        return sensor
+
     # @comment: this needs to be implemented
     @staticmethod
     def request_new_actors(actor_list, attribute_filter=None, tick=True):

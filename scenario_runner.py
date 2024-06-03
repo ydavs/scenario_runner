@@ -30,6 +30,7 @@ import time
 import json
 import pkg_resources
 import srunner.osc2_stdlib.global_variables as gv
+import srunner.tools.sensor_helper
 import numpy as np
 
 import limulator
@@ -209,7 +210,7 @@ class ScenarioRunner(object):
             self.agent_instance.destroy()
             self.agent_instance = None
 
-    def _prepare_ego_vehicles(self, ego_vehicles):
+    def _prepare_ego_vehicles(self, ego_vehicles, scenario_name=""):
         """
         Spawn or update the ego vehicles
         """
@@ -248,6 +249,12 @@ class ScenarioRunner(object):
                 self.ego_vehicles[i].set_target_angular_velocity(limulator.Vector3D())
                 self.ego_vehicles[i].apply_control(limulator.VehicleControl())
                 CarlaDataProvider.register_actor(self.ego_vehicles[i], ego_vehicles[i].transform)
+
+        # For all ego_vehicles add sensor packaging
+        for ego_vehicle in ego_vehicles:
+            sensor_descriptions = srunner.tools.sensor_helper.read_packaging_info(ego_vehicle.model, scenario_name)
+            for sensor_description in sensor_descriptions:
+                CarlaDataProvider.request_new_sensor(sensor_description)
 
         # sync state
         if CarlaDataProvider.is_sync_mode():
@@ -383,7 +390,7 @@ class ScenarioRunner(object):
         print("Preparing scenario: " + config.name)
         try:
             # @comment: spawn the ego's. There can be more than one ego vehicles.
-            self._prepare_ego_vehicles(config.ego_vehicles)
+            self._prepare_ego_vehicles(config.ego_vehicles, os.path.basename(config.name) + str(GV.SEED))
 
             if self._args.openscenario2:
                 scenario = OSC2Scenario(world=self.world,
