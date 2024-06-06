@@ -7,7 +7,7 @@ import random
 import re
 import sys
 from typing import List, Tuple
-
+from limulator import Transform, Rotation
 import py_trees
 
 import sys
@@ -267,6 +267,7 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
 
     init_wp = None
     npc_name = None
+    orient_true=False
 
     for modifier in start_group:
         npc_name = modifier.get_actor_name()
@@ -293,27 +294,34 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
             # Same lane
             pass
         elif location == "relative_to":
+            orient_true=True
             yaw= modifier.get_yaw().gen_physical_value()
             pitch= modifier.get_pitch().gen_physical_value()
             roll= modifier.get_roll().gen_physical_value()
-            car_name= modifier.get_actor_name()
-            car_conf = config.get_car_config(car_name)
-            car_location = car_conf.get_transform().location
-            car_rotation = car_conf.get_transform().rotation
-            relative_car_location.x=69
-            init_wp.transform.rotation.pitch=pitch
-            car_rotation.pitch=pitch
-            car_rotation.yaw=yaw
-            car_rotation.roll=roll
+            rot_object=Rotation(pitch, yaw, roll)
+            #car_name= modifier.get_actor_name()
+            #car_conf = config.get_car_config(car_name)
+            loc_object = init_wp.transform.location
+            #car_rotation = car_conf.get_transform().rotation
+            #relative_car_location.x=69
+            init_wp.update_transform(Transform(loc_object,rot_object))
+            # car_rotation.pitch=pitch
+            # car_rotation.yaw=yaw
+            # car_rotation.roll=roll
         elif location in ('ahead_of', 'behind'):
+            
             distance = modifier.get_distance().gen_physical_value()
 
             if location == "ahead_of":
                 wp_lists = init_wp.next(distance)
             else:
                 wp_lists = init_wp.previous(distance)
-            if wp_lists:
-                init_wp = wp_lists[0]
+            if not orient_true:
+                if wp_lists:
+                    init_wp = wp_lists[0]
+            else:
+                if wp_lists:
+                    init_wp.update_transform(Transform(wp_lists[0].transform.location,init_wp.transform.rotation))
         else:
             raise KeyError(f"wrong location = {location}")
 

@@ -57,7 +57,7 @@ scenario top:
     path: Path                      # A path in the map
     path.set_map("Town04")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
-    npcone: Rubicon
+    npcone: ConcreteBarrier
     #npcone.set_position(x:255.0m, y:-160.7m, z:-0.15m,pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
     npctwo: OlaScooter
     npctwo.set_position(x:251.0m, y:-190.7m, z:2.0m, pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
@@ -77,5 +77,5 @@ scenario top:
             npcone.walk(path) with:
                 #speed(5kph)
                 #lane(same_as:ego_vehicle, at: start) # left to right: [1..n]
+                orientation(yaw:45.0rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
                 position(10m, ahead_of: ego_vehicle, at: start)
-                orientation(yaw:0.0rad, pitch:90.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
