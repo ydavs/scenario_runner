@@ -294,20 +294,13 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
             # Same lane
             pass
         elif location == "relative_to":
-            orient_true=True
-            yaw= modifier.get_yaw().gen_physical_value()
-            pitch= modifier.get_pitch().gen_physical_value()
-            roll= modifier.get_roll().gen_physical_value()
+            orient_true=True 
+            yaw=init_wp.transform.rotation.yaw + modifier.get_yaw().gen_physical_value()
+            pitch=init_wp.transform.rotation.pitch + modifier.get_pitch().gen_physical_value()
+            roll=init_wp.transform.rotation.roll + modifier.get_roll().gen_physical_value()
             rot_object=Rotation(pitch, yaw, roll)
-            #car_name= modifier.get_actor_name()
-            #car_conf = config.get_car_config(car_name)
             loc_object = init_wp.transform.location
-            #car_rotation = car_conf.get_transform().rotation
-            #relative_car_location.x=69
             init_wp.update_transform(Transform(loc_object,rot_object))
-            # car_rotation.pitch=pitch
-            # car_rotation.yaw=yaw
-            # car_rotation.roll=roll
         elif location in ('ahead_of', 'behind'):
             
             distance = modifier.get_distance().gen_physical_value()
