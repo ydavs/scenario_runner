@@ -2723,7 +2723,7 @@ class WaypointFollower(AtomicBehavior):
     """
 
     def __init__(self, actor, target_speed=None, plan=None, blackboard_queue_name=None,
-                 avoid_collision=False, name="FollowWaypoints"):
+                 avoid_collision=False, name="FollowWaypoints", turn_modifier=None):
         """
         Set up actor and local planner
         """
@@ -2734,6 +2734,7 @@ class WaypointFollower(AtomicBehavior):
         self._local_planner_dict = {}
         self._local_planner_dict[actor] = None
         self._plan = plan
+        self.turn_modifier=turn_modifier
         self._blackboard_queue_name = blackboard_queue_name
         if blackboard_queue_name is not None:
             self._queue = Blackboard().get(blackboard_queue_name)
@@ -2790,11 +2791,13 @@ class WaypointFollower(AtomicBehavior):
                 else:
                     self._actor_dict[actor] = [element[0].transform.location for element in self._plan]
         else:
-            local_planner = LocalPlanner(  # pylint: disable=undefined-variable
-                actor, opt_dict={
+            opt_dict={
                     'target_speed': self._target_speed * 3.6,
                     'lateral_control_dict': self._args_lateral_dict,
-                    'max_throttle': 1.0})
+                    'max_throttle': 1.0,
+                    'take_turn': self.turn_modifier}
+            local_planner = LocalPlanner(  # pylint: disable=undefined-variable
+                actor, opt_dict )
 
             if self._plan is not None:
                 if isinstance(self._plan[0], limulator.Location):

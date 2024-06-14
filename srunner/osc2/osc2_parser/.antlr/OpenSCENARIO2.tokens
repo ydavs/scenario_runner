@@ -105,9 +105,9 @@ DEDENT=95
 'enum'=10
 '='=11
 '!'=12
-'struct'=13
-'inherits'=14
-'=='=15
+'=='=13
+'struct'=14
+'inherits'=15
 'actor'=16
 'scenario'=17
 'action'=18
