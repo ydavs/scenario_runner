@@ -62,7 +62,7 @@ scenario top:
     #npctwo: OlaScooter
     #npctwo.set_position(x:251.0m, y:-190.7m, z:2.0m, pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
     ego_vehicle: Model3             # The other car
-    ego_vehicle.set_position(x:174.0m, y:35.0m, z:0.0m, pitch:0.0rad, yaw:-90.0rad, roll:0.0rad)
+    ego_vehicle.set_position(x:172.0m, y:35.0m, z:0.0m, pitch:0.0rad, yaw:-90.0rad, roll:0.0rad)
 
     event start
     event end
