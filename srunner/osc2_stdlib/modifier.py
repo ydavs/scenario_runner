@@ -94,6 +94,23 @@ class TurnModifier(Modifier):
 
     def get_trigger_point(self) -> str:
         return self.args.get("at", "all")
+class WrongSideModifier(Modifier):
+    # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])
+    def __init__(self, actor_name: str, name: str) -> None:
+        super().__init__(actor_name, name)
+
+    def get_status(self):
+        side = self.args["activate"]
+        if side=="true":
+            return side
+        else:
+            print(
+                "[Error] 'side' parameter of PositionModifier must be 'Physical' type"
+            )
+            sys.exit(1)
+
+    def get_trigger_point(self) -> str:
+        return self.args.get("at", "all")
 
 class OrientationModifier(Modifier):
     # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])

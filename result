@@ -73,7 +73,9 @@ scenario top:
             ego_vehicle.drive(path) with:
                 speed(25kph)
                 take_turn(side:left)
+                wrong_side(activate:true)
                 #lane(3, at: start)
+                #orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
                 #position(30m, behind: npc, at: start)
             #npcone.walk(path) with:
                 #speed(5kph)
