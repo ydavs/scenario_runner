@@ -29,7 +29,7 @@ class Modifier:
 
 
 class SpeedModifier(Modifier):
-    # speed([speed: ]<speed>, [faster_than: <car> | slower_than: <car>][, at: <event>])
+    # speed([speed: ]<speed>, [faster_than: <car> | slower_than: <car>][, at: <event>], [turn: <string>])
     def __init__(self, actor_name: str, name: str) -> None:
         super().__init__(actor_name, name)
         self.args = {}
@@ -43,6 +43,19 @@ class SpeedModifier(Modifier):
             return Physical(speed.gen_single_value(), speed.unit)
         else:
             print("[Error] 'speed' parameter of SpeedModifier must be 'Physical' type")
+            sys.exit(1)
+
+    def get_turn(self):
+        if "turn" not in self.args.keys():
+            return None
+
+        turn = self.args["turn"]
+        if turn == "left" or turn == "right":
+            return turn
+        else:
+            print(
+                "[Error] 'side' parameter of PositionModifier must be 'Physical' type"
+            )
             sys.exit(1)
 
     def set_relative_car(self, car: Vehicle, side: AVCarSide) -> None:

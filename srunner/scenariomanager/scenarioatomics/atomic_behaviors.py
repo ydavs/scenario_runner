@@ -2897,17 +2897,17 @@ class WaypointFollower(AtomicBehavior):
         the controls should be set back to 0.
         """
         print('Terminating Waypoint Follower')
-        # for actor in self._local_planner_dict:
-        #     if actor is not None and actor.is_alive:
-        #         control, _ = get_actor_control(actor)
-        #         actor.apply_control(control)
-        #         local_planner = self._local_planner_dict[actor]
-        #         if local_planner is not None and local_planner != "Walker":
-        #             local_planner.reset_vehicle()
-        #             local_planner = None
-        #
-        # self._local_planner_dict = {}
-        # self._actor_dict = {}
+        for actor in self._local_planner_dict:
+            if actor is not None and actor.is_alive:
+                control, _ = get_actor_control(actor)
+                actor.apply_control(control)
+                local_planner = self._local_planner_dict[actor]
+                if local_planner is not None and local_planner != "Walker":
+                    local_planner.reset_vehicle()
+                    local_planner = None
+
+        self._local_planner_dict = {}
+        self._actor_dict = {}
         super(WaypointFollower, self).terminate(new_status)
 
 

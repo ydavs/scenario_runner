@@ -18,8 +18,6 @@ from agents.navigation.global_route_planner import GlobalRoutePlanner
 from srunner.osc2.ast_manager import ast_node
 from srunner.osc2.ast_manager.ast_vistor import ASTVisitor
 
-
-
 # OSC2
 from srunner.osc2.symbol_manager.method_symbol import MethodSymbol
 from srunner.osc2.symbol_manager.parameter_symbol import ParameterSymbol
@@ -152,9 +150,10 @@ def process_speed_modifier(
         if isinstance(modifier, SpeedModifier):
             # en_value_mps() The speed unit in Carla is m/s, so the default conversion unit is m/s
             target_speed = modifier.get_speed().gen_physical_value()
+            turn = modifier.get_turn()
             # target_speed = float(modifier.get_speed())*0.27777778
             actor = CarlaDataProvider.get_actor_by_name(actor_name)
-            car_driving = WaypointFollower(actor, target_speed)
+            car_driving = WaypointFollower(actor, target_speed, turn_modifier=turn)
             # car_driving.set_duration(duration)
 
             father_tree.add_child(car_driving)
