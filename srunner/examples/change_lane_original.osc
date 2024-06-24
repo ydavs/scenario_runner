@@ -15,24 +15,22 @@ scenario top:
     do serial:
         get_ahead: parallel(duration: 15s):
             ego_vehicle.drive(path) with:
-                speed(30.0kph)
+                speed(20kph)
                 lane(1, at: start) # left to right: [1..n]
             npc.drive(path) with:
-                speed(50kph)
                 lane(right_of: ego_vehicle, at: start)
                 position(15m, behind: ego_vehicle, at: start)
-                position(20.0m, ahead_of: ego_vehicle, at: end)
+                position(20m, ahead_of: ego_vehicle, at: end)
 
         change_lane: parallel(duration: 5s):
             ego_vehicle.drive(path)
             npc.drive(path) with:
                 # change_lane(lane_changes:[1..2], side:left)
-                change_lane(lane_changes:1.0, side: right)
-                change_speed(60kph)
+                change_lane(lane_changes:[1..2], side: right)
 
         slow: parallel(duration: 20s):
             ego_vehicle.drive(path)
             npc.drive(path) with:
-                change_speed(-20.5kph)
+                speed(20kph)
 
 

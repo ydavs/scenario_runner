@@ -1,0 +1,55 @@
+sensors:
+  - name: lidar
+    type: 4
+    parent: ego_vehicle
+    ip: "192.168.1.12"
+    port: 8002
+    write_to_socket: false
+    output_folder: "lidar"
+
+    location:
+      x: -0.5
+      y: 0.0
+      z: 1.5
+    rotation:
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+
+    parameters:
+      prf: 500000
+      channels: 64
+      scanning_frequency: 1
+      wavelength: 1.4
+      max_range: 10000
+      min_range: 0.0
+      neg_vertical_fov: -25
+      pos_vertical_fov: 15
+      horizontal_fov: 360.0
+      atmosphere_attenuation_rate: 0.004
+
+  - name: camera
+    type: 1
+    parent: ego_vehicle
+    ip: "192.168.1.12"
+    port: 8003
+    write_to_socket: false
+    output_folder: "camera"
+
+    location:
+      x: -0.5
+      y: 0.0
+      z: 1.5
+
+    rotation:
+      roll: 0.0
+      pitch: 0.0
+      yaw: 0.0
+
+    parameters:
+      image_width: 640
+      image_height: 480
+      scanning_frequency: 10
+      show_2D_bounds: false
+      show_3D_bounds: false
+      show_occluded_objects: false

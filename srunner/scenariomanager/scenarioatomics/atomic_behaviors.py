@@ -1703,8 +1703,8 @@ class ChangeTargetSpeed(AtomicBehavior):
                 else:
                     # 减速
                     self._control.throttle = 0
-                    self._control.brake = 1
-                    print('decelerate!!!')
+                    self._control.brake = 0.35
+                    print(f'current speed={curr_speed} km/h, target speed={self._target_velocity} km/h, decelerate!!! ')
 
         self._actor.apply_control(self._control)
         self.logger.debug("%s.update()[%s->%s]" % (self.__class__.__name__, self.status, new_status))

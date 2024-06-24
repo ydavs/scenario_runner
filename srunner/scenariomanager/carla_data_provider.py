@@ -12,11 +12,13 @@ local buffers to avoid blocking calls to CARLA
 
 from __future__ import print_function
 
+from typing import List
 import math
 import re
 import threading
 from numpy import random
 from six import iteritems
+import srunner.osc2_stdlib.global_variables as gv
 
 import sys
 sys.path.append(r'/home/simdaas/Limulator/PythonAPI/carla')
@@ -62,7 +64,7 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
     _world = None
     _map = None
     _sync_flag = False
-    _spawn_points = None
+    _spawn_points: List = None
     _spawn_index = 0
     _blueprint_library = None
     _all_actors = None
@@ -74,6 +76,7 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
     _grp = None
     _runtime_init_flag = False
     _lock = threading.Lock()
+    _min_driving_lanes: float
 
     @staticmethod
     def set_local_planner(plan):
@@ -561,11 +564,32 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         if CarlaDataProvider._spawn_points is None:
             CarlaDataProvider.generate_spawn_points()
 
+        CarlaDataProvider._spawn_points = [pos for pos in CarlaDataProvider._spawn_points  # pylint: disable=unsubscriptable-object
+                        if (
+                            len(
+                                CarlaDataProvider.get_road_lanes(
+                                    CarlaDataProvider.get_map().get_waypoint(
+                                        pos.location,
+                                        project_to_road=True,
+                                        lane_type=limulator.LaneType.Driving))) >= int(float(lane_num)) and 
+                            CarlaDataProvider.get_road_lane_cnt(
+                                CarlaDataProvider.get_map().get_waypoint(
+                                    pos.location,
+                                    project_to_road=True,
+                                    lane_type=limulator.LaneType.Driving)) >= int(CarlaDataProvider._min_driving_lanes))]
+        # CarlaDataProvider._spawn_index = gv.SEED
+        
+        #TODO: Instead of moving spawn index to gv.SEED instead move it to first and send everything before it to end of  the list
+        if gv.SEED > 0:
+            CarlaDataProvider._spawn_points.extend(CarlaDataProvider._spawn_points[:gv.SEED])
+            CarlaDataProvider._spawn_points = CarlaDataProvider._spawn_points[gv.SEED:]
+
         if CarlaDataProvider._spawn_index >= len(CarlaDataProvider._spawn_points):
             print("No more spawn points to use")
             return None
-        #else:
+        # else:
         while True:
+            # pos = spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
             pos = CarlaDataProvider._spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
             CarlaDataProvider._spawn_index += 1
             wp = CarlaDataProvider.get_map().get_waypoint(pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving)
@@ -759,6 +783,11 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         CarlaDataProvider._carla_actor_pool[actor.id] = actor
         CarlaDataProvider.register_actor(actor, spawn_point)
         return actor
+
+    @staticmethod
+    def request_new_sensor(sensor_description):
+        sensor = CarlaDataProvider._world.spawn_sensor(sensor_description, sensor_description.transform, -1)
+        return sensor
 
     # @comment: this needs to be implemented
     @staticmethod

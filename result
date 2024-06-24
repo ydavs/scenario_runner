@@ -69,6 +69,7 @@ scenario top:
     event left
     event right
     do serial:
+<<<<<<< HEAD
         spawn: parallel(duration: 25s):
             ego_vehicle.drive(path) with:
                 speed(25kph)
