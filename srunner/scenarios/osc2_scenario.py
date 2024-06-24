@@ -36,6 +36,7 @@ from srunner.osc2_stdlib.modifier import (
     PositionModifier,
     SpeedModifier,
     TurnModifier,
+    WrongSideModifier,
 )
 
 # OSC2
@@ -220,7 +221,17 @@ def process_action_modifier(config, modifiers, father_tree):
             LOG_WARNING(
                 f"{npc_name} car will turn towards {turn_side}"
             )
-            return
+        if isinstance(modifier, WrongSideModifier):
+            status = modifier.get_status()
+            npc_name = modifier.get_actor_name()
+            actor = CarlaDataProvider.get_actor_by_name(npc_name)
+            continue_drive = WaypointFollower(actor, wrong_side=status)
+            father_tree.add_child(continue_drive)
+            car_config = config.get_car_config(npc_name)
+            car_config.set_arg({"wrong side": status})
+            LOG_WARNING(
+                f"{npc_name} car will move on the wrong side of the road"
+            )
 
 def process_location_modifier(config, modifiers, duration: float, father_tree):
     # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])
@@ -899,6 +910,25 @@ class OSC2Scenario(BasicScenario):
                         modifier_ins.set_args(keyword_args)
 
                         action_modifiers.append(modifier_ins)
+                    
+                    elif modifier_name == "wrong_side":
+                        modifier_ins = WrongSideModifier(actor, modifier_name)
+                        keyword_args = {}
+                        if isinstance(arguments, list):
+                            arguments = OSC2Helper.flat_list(arguments)
+                            for arg in arguments:
+                                if isinstance(arg, tuple):
+                                    keyword_args[arg[0]] = arg[1]
+                        elif isinstance(arguments, tuple):
+                            keyword_args[arguments[0]] = arguments[1]
+                        else:
+                            raise NotImplementedError(
+                                f"no implentment argument of {modifier_name}"
+                            )
+
+                        modifier_ins.set_args(keyword_args)
+
+                        action_modifiers.append(modifier_ins)
 
                     elif modifier_name == "lane":
                         modifier_ins = LaneModifier(actor, modifier_name)
@@ -1039,7 +1069,8 @@ class OSC2Scenario(BasicScenario):
                     "acceleration",
                     "keep_lane",
                     "change_speed",
-                    "change_lane",
+                    "change_lane"
+                    "wrong_side",
                 )
             ):
                 line, column = node.get_loc()

@@ -1,16 +1,23 @@
 import basic.osc
 
-#scenario to implement ego vehicle approaching a stopped lead vehicle:
+#scenario to implement ego vehicle overtaking:
 
-#we have 2 cars:ego, lead
+#we have 3 cars:ego, lead1, lead2
+#npc2 and 3 are only to simulate traffic
+#NOTE: Creta has a problem in its camera don't make it ego
+#Overtaking 2 vehicles on the same lane when the right lane is free, overtaking 2 vehicles at once
 
 scenario top:
     path: Path                      # A path in the map
     path.set_map("Highway_Map_Light")    # specify map to use
-    path.path_min_driving_lanes(2)         # Path should have at least two lanes
+    path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
     ego_vehicle: Mercedes  #Mercedes on the roads of india :) clearly a synthetic simulation!
-    lead_vehicle: Model3
+    lead1_vehicle: Model3
+    lead2_vehicle: Creta
+    npc2: Mercedes
+    npc3: Mercedes
+    npc4: Model3 #npc3
     
     event start
     event end
@@ -19,56 +26,30 @@ scenario top:
 
     do serial:
 
-        spawn: parallel(duration: 5s):
+        spawn: parallel(duration: 30s):
             #the 3 vehicles are spawned and begin their drive
             ego_vehicle.drive(path) with:
-                speed(30kph)
+                speed(10kph)
                 lane(1, at:start)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph) #Dont write 0 as iske respect mei kucch likhoge toh error ayega
+            lead1_vehicle.drive(path) with:
+                speed(10kph)
                 lane(same_as:ego_vehicle, at:start)
-                position(100m, ahead_of:ego_vehicle, at:start)
-
-        slow_down: parallel(duration:4s):
-            #the ego_vehicle slows down
-            ego_vehicle.drive(path) with:
-                position(30m, behind:lead_vehicle, at:end)
-            lead_vehicle.drive(path) with:
+                position(25m, ahead_of:ego_vehicle, at:start)
+            lead2_vehicle.drive(path) with:
+                speed(10kph)
+                lane(same_as:ego_vehicle, at:start)
+                position(50m, ahead_of:ego_vehicle, at:start)
+            npc4.drive(path) with: #only for accessing lane 3
                 speed(0.1kph)
-        slow_down3: parallel(duration:3s):
-            ego_vehicle.drive(path) with:
-                speed(15kph)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph)
-        further slow_down: parallel(duration: 1s):
-            #the ego_vehicle slows down
-            ego_vehicle.drive(path) with:
-                position(20m, behind:lead_vehicle, at:end)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph)
-        slow_down3: parallel(duration:3s):
-            ego_vehicle.drive(path) with:
-                speed(5kph)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph)
-        changelane: parallel(duration: 7s):
-            ego_vehicle.drive(path) with:
-                change_lane(lane_changes:1,side:right)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph)
-        get_ahead: parallel(duration: 3s):
-            ego_vehicle.drive(path) with:
-                position(20m, ahead_of:lead_vehicle, at:end)
-        changelane2: parallel(duration: 3s):
-            ego_vehicle.drive(path) with:
-                change_lane(lane_changes:1,side:left)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph)
-        speedup:parallel(duration: 5s):
-            ego_vehicle.drive(path) with:
-                speed(45kph)
-            lead_vehicle.drive(path) with:
-                speed(0.1kph)
-
-        
-
+                lane(right_of:ego_vehicle, at:start)
+                position(100m, behind:ego_vehicle, at:start) 
+            npc2.drive(path) with:
+                speed(20kph)
+                # NOTE: right_of_right_of is not supported
+                #lane(3, at:start) NOT ALLOWED
+                lane(right_of:npc4, at:start)
+                position(80m, ahead_of:npc4, at:start)
+            npc3.drive(path) with:
+                speed(20kph)
+                lane(right_of:npc4, at:start)
+                position(75m, ahead_of:npc4, at:start)

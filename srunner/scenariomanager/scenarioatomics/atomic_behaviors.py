@@ -2723,7 +2723,7 @@ class WaypointFollower(AtomicBehavior):
     """
 
     def __init__(self, actor, target_speed=None, plan=None, blackboard_queue_name=None,
-                 avoid_collision=False, name="FollowWaypoints", turn_modifier=None):
+                 avoid_collision=False, name="FollowWaypoints", turn_modifier=None, wrong_side=None):
         """
         Set up actor and local planner
         """
@@ -2735,6 +2735,7 @@ class WaypointFollower(AtomicBehavior):
         self._local_planner_dict[actor] = None
         self._plan = plan
         self.turn_modifier=turn_modifier
+        self._wrong_side=wrong_side
         self._blackboard_queue_name = blackboard_queue_name
         if blackboard_queue_name is not None:
             self._queue = Blackboard().get(blackboard_queue_name)
@@ -2795,7 +2796,8 @@ class WaypointFollower(AtomicBehavior):
                     'target_speed': self._target_speed * 3.6,
                     'lateral_control_dict': self._args_lateral_dict,
                     'max_throttle': 1.0,
-                    'take_turn': self.turn_modifier}
+                    'take_turn': self.turn_modifier,
+                    'wrong_side':self._wrong_side}
             local_planner = LocalPlanner(  # pylint: disable=undefined-variable
                 actor, opt_dict )
 
@@ -2807,6 +2809,7 @@ class WaypointFollower(AtomicBehavior):
                                                                             project_to_road=True,
                                                                             lane_type=limulator.LaneType.Any)
                         plan.append((waypoint, RoadOption.LANEFOLLOW))
+                    # plan.reverse()
                     local_planner.set_global_plan(plan)
                 else:
                     local_planner.set_global_plan(self._plan)
