@@ -17,7 +17,7 @@ scenario top:
     #npctwo: OlaScooter
     #npctwo.set_position(x:251.0m, y:-190.7m, z:2.0m, pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
     ego_vehicle: Model3             # The other car
-    ego_vehicle.set_position(x:172.0m, y:35.0m, z:0.0m, pitch:0.0rad, yaw:-90.0rad, roll:0.0rad)
+    ego_vehicle.set_position(x:174.0m, y:35.0m, z:0.0m, pitch:0.0rad, yaw:-90.0rad, roll:0.0rad)
 
     event start
     event end
@@ -26,15 +26,13 @@ scenario top:
     do serial:
         spawn: parallel(duration: 25s):
             ego_vehicle.drive(path) with:
-                speed(25kph)
-                take_turn(side:left)
-                wrong_side(activate:true)
+                road_action(speed:40kph,wrong_side:false)
+                #speed(25kph)
                 #lane(3, at: start)
                 #orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
                 #position(30m, behind: npc, at: start)
-            #npcone.walk(path) with:
-                #speed(5kph)
-                #lane(same_as:ego_vehicle, at: start) # left to right: [1..n]
-                #orientation(yaw:90rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
-                #take_turn(side:left)
-                #position(10m, ahead_of: ego_vehicle, at: start)
+            #npcone.drive(path) with:
+                #road_action(speed:40kph,wrong_side:true)
+                #lane(right_of:ego_vehicle, at: start) # left to right: [1..n]
+                #orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                #position(40m, ahead_of: ego_vehicle, at: start)

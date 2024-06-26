@@ -37,6 +37,7 @@ from srunner.osc2_stdlib.modifier import (
     SpeedModifier,
     TurnModifier,
     WrongSideModifier,
+    RoadActionModifier,
 )
 
 # OSC2
@@ -151,10 +152,10 @@ def process_speed_modifier(
         if isinstance(modifier, SpeedModifier):
             # en_value_mps() The speed unit in Carla is m/s, so the default conversion unit is m/s
             target_speed = modifier.get_speed().gen_physical_value()
-            turn = modifier.get_turn()
+            #turn = modifier.get_turn()
             # target_speed = float(modifier.get_speed())*0.27777778
             actor = CarlaDataProvider.get_actor_by_name(actor_name)
-            car_driving = WaypointFollower(actor, target_speed, turn_modifier=turn)
+            car_driving = WaypointFollower(actor, target_speed)
             # car_driving.set_duration(duration)
 
             father_tree.add_child(car_driving)
@@ -210,27 +211,44 @@ def process_action_modifier(config, modifiers, father_tree):
         return
 
     for modifier in modifiers:
-        if isinstance(modifier, TurnModifier):
-            turn_side = modifier.get_side()
+        # if isinstance(modifier, TurnModifier):
+        #     turn_side = modifier.get_side()
+        #     npc_name = modifier.get_actor_name()
+        #     actor = CarlaDataProvider.get_actor_by_name(npc_name)
+        #     continue_drive = WaypointFollower(actor, turn_modifier=turn_side)
+        #     father_tree.add_child(continue_drive)
+        #     car_config = config.get_car_config(npc_name)
+        #     car_config.set_arg({"turn side": turn_side})
+        #     LOG_WARNING(
+        #         f"{npc_name} car will turn towards {turn_side}"
+        #     )
+        # if isinstance(modifier, WrongSideModifier):
+        #     status = modifier.get_status()
+        #     npc_name = modifier.get_actor_name()
+        #     actor = CarlaDataProvider.get_actor_by_name(npc_name)
+        #     continue_drive = WaypointFollower(actor, wrong_side=status)
+        #     father_tree.add_child(continue_drive)
+        #     car_config = config.get_car_config(npc_name)
+        #     car_config.set_arg({"wrong side": status})
+        #     LOG_WARNING(
+        #         f"{npc_name} car will move on the wrong side of the road"
+        #     )
+        if isinstance(modifier, RoadActionModifier):
+            wrong_side_status = modifier.get_status()
+            turn_side = modifier.get_turn_side()
+            target_speed = modifier.get_speed().gen_physical_value()
             npc_name = modifier.get_actor_name()
             actor = CarlaDataProvider.get_actor_by_name(npc_name)
-            continue_drive = WaypointFollower(actor, turn_modifier=turn_side)
+            continue_drive = WaypointFollower(actor, target_speed=target_speed, wrong_side=wrong_side_status, turn_modifier=turn_side)
             father_tree.add_child(continue_drive)
             car_config = config.get_car_config(npc_name)
+            car_config.set_arg({"wrong side": wrong_side_status})
+            LOG_WARNING(
+                f"{npc_name} car will move on the wrong side of the road"
+            )
             car_config.set_arg({"turn side": turn_side})
             LOG_WARNING(
                 f"{npc_name} car will turn towards {turn_side}"
-            )
-        if isinstance(modifier, WrongSideModifier):
-            status = modifier.get_status()
-            npc_name = modifier.get_actor_name()
-            actor = CarlaDataProvider.get_actor_by_name(npc_name)
-            continue_drive = WaypointFollower(actor, wrong_side=status)
-            father_tree.add_child(continue_drive)
-            car_config = config.get_car_config(npc_name)
-            car_config.set_arg({"wrong side": status})
-            LOG_WARNING(
-                f"{npc_name} car will move on the wrong side of the road"
             )
 
 def process_location_modifier(config, modifiers, duration: float, father_tree):
@@ -892,27 +910,46 @@ class OSC2Scenario(BasicScenario):
 
                         location_modifiers.append(modifier_ins)
                     
-                    elif modifier_name == "take_turn":
-                        modifier_ins = TurnModifier(actor, modifier_name)
-                        keyword_args = {}
-                        if isinstance(arguments, list):
-                            arguments = OSC2Helper.flat_list(arguments)
-                            for arg in arguments:
-                                if isinstance(arg, tuple):
-                                    keyword_args[arg[0]] = arg[1]
-                        elif isinstance(arguments, tuple):
-                            keyword_args[arguments[0]] = arguments[1]
-                        else:
-                            raise NotImplementedError(
-                                f"no implentment argument of {modifier_name}"
-                            )
+                    # elif modifier_name == "take_turn":
+                    #     modifier_ins = TurnModifier(actor, modifier_name)
+                    #     keyword_args = {}
+                    #     if isinstance(arguments, list):
+                    #         arguments = OSC2Helper.flat_list(arguments)
+                    #         for arg in arguments:
+                    #             if isinstance(arg, tuple):
+                    #                 keyword_args[arg[0]] = arg[1]
+                    #     elif isinstance(arguments, tuple):
+                    #         keyword_args[arguments[0]] = arguments[1]
+                    #     else:
+                    #         raise NotImplementedError(
+                    #             f"no implentment argument of {modifier_name}"
+                    #         )
 
-                        modifier_ins.set_args(keyword_args)
+                    #     modifier_ins.set_args(keyword_args)
 
-                        action_modifiers.append(modifier_ins)
+                    #     action_modifiers.append(modifier_ins)
                     
-                    elif modifier_name == "wrong_side":
-                        modifier_ins = WrongSideModifier(actor, modifier_name)
+                    # elif modifier_name == "wrong_side":
+                    #     modifier_ins = WrongSideModifier(actor, modifier_name)
+                    #     keyword_args = {}
+                    #     if isinstance(arguments, list):
+                    #         arguments = OSC2Helper.flat_list(arguments)
+                    #         for arg in arguments:
+                    #             if isinstance(arg, tuple):
+                    #                 keyword_args[arg[0]] = arg[1]
+                    #     elif isinstance(arguments, tuple):
+                    #         keyword_args[arguments[0]] = arguments[1]
+                    #     else:
+                    #         raise NotImplementedError(
+                    #             f"no implentment argument of {modifier_name}"
+                    #         )
+
+                    #     modifier_ins.set_args(keyword_args)
+
+                    #     action_modifiers.append(modifier_ins)
+                    
+                    elif modifier_name == "road_action":
+                        modifier_ins = RoadActionModifier(actor, modifier_name)
                         keyword_args = {}
                         if isinstance(arguments, list):
                             arguments = OSC2Helper.flat_list(arguments)
@@ -1071,6 +1108,7 @@ class OSC2Scenario(BasicScenario):
                     "change_speed",
                     "change_lane"
                     "wrong_side",
+                    "road_action",
                 )
             ):
                 line, column = node.get_loc()

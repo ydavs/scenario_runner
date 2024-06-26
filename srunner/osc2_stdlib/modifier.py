@@ -96,7 +96,7 @@ class TurnModifier(Modifier):
 
     def get_side(self):
         side = self.args["side"]
-        if side=="left" or side=="right":
+        if side=="left" or side=="right" or side=="straight":
             return side
         else:
             print(
@@ -112,12 +112,52 @@ class WrongSideModifier(Modifier):
 
     def get_status(self):
         status = self.args["activate"]
-        if status==True:
+        if status==True or status==False:
             return status
         else:
             print(
-                "[Error] 'status' parameter of PositionModifier must be 'Physical' type"
+                "[Error] 'status' parameter of PositionModifier must be Boolean type"
             )
+            sys.exit(1)
+
+    def get_trigger_point(self) -> str:
+        return self.args.get("at", "all")
+class RoadActionModifier(Modifier):
+    def __init__(self, actor_name: str, name: str) -> None:
+        super().__init__(actor_name, name)
+
+    def get_status(self):
+        if"wrong_side" in self.args.keys():
+            status = self.args["wrong_side"]
+            if status==True or status==False:
+                return status
+            else:
+                print(
+                    "[Error] 'status' parameter of PositionModifier must be Boolean type"
+                )
+                sys.exit(1)
+        else:
+            return None
+    
+    def get_turn_side(self):
+        if"turn" in self.args.keys():
+            side = self.args["turn"]
+            if side=="left" or side=="right" or side=="straight":
+                return side
+            else:
+                print(
+                    "[Error] 'side' parameter of PositionModifier must be 'Physical' type"
+                )
+                sys.exit(1)
+        else:
+            return None
+    
+    def get_speed(self):
+        speed = self.args["speed"]
+        if isinstance(speed, Physical):
+            return Physical(speed.gen_single_value(), speed.unit)
+        else:
+            print("[Error] 'speed' parameter of SpeedModifier must be 'Physical' type")
             sys.exit(1)
 
     def get_trigger_point(self) -> str:
