@@ -31,6 +31,8 @@ class Path:
     is_explicit = None
     over_different_marks = None
     curve: PathCurve = None
+    topology=None
+    junction_waypoints=[]
 
     @classmethod
     def set_map(cls, map_name: str) -> None:
@@ -79,6 +81,12 @@ class Path:
             limulator.LandmarkType.YieldSign,
             limulator.LandmarkType.Roundabout,
         ]
+    
+    @classmethod
+    def path_with_junction(cls, distance=None, junction_id=None):
+        carla_data.CarlaDataProvider._path_with_junction=True
+        carla_data.CarlaDataProvider._junction_distance=distance if distance!="None" else None
+        carla_data.CarlaDataProvider._junction_id=junction_id if junction_id!="None" else None
 
     @classmethod
     def path_over_junction(

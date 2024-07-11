@@ -10,29 +10,32 @@ unit rad    of angle is SI(rad: 1, factor: 1)
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Junction_Map1")    # specify map to use in this test
+    path.set_map("Highway_Map_Light")    # specify map to use in this test
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
-    #npcone: Rubicon
+    #path.path_with_junction(junction_id:8,distance:None)
+    npcone: Rubicon
     #npcone.set_position(x:255.0m, y:-160.7m, z:-0.15m,pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
     #npctwo: OlaScooter
     #npctwo.set_position(x:251.0m, y:-190.7m, z:2.0m, pitch:0.0rad, yaw:0.0rad, roll:0.0rad)
     ego_vehicle: Model3             # The other car
-    ego_vehicle.set_position(x:174.0m, y:35.0m, z:0.0m, pitch:0.0rad, yaw:-90.0rad, roll:0.0rad)
+    #ego_vehicle.set_position(x:174.0m, y:35.0m, z:0.0m, pitch:0.0rad, yaw:-90.0rad, roll:0.0rad)
 
     event start
     event end
     event left
     event right
     do serial:
-        spawn: parallel(duration: 25s):
+        spawn: parallel(duration: 30s):
             ego_vehicle.drive(path) with:
-                road_action(speed:40kph,wrong_side:false)
+                road_action(speed:30kph,turn:left,wrong_side:false)
+                #cross_action(speed: 25kph, angle: 60rad)
                 #speed(25kph)
-                #lane(3, at: start)
+                lane(1, at: start)
                 #orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
                 #position(30m, behind: npc, at: start)
-            #npcone.drive(path) with:
-                #road_action(speed:40kph,wrong_side:true)
-                #lane(right_of:ego_vehicle, at: start) # left to right: [1..n]
-                #orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
-                #position(40m, ahead_of: ego_vehicle, at: start)
+            npcone.drive(path) with:
+                road_action(speed:40kph,wrong_side:true)
+                #speed(40kph)
+                lane(right_of:ego_vehicle, at: start) # left to right: [1..n]
+                orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                position(35m, ahead_of: ego_vehicle, at: start)

@@ -77,6 +77,9 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
     _runtime_init_flag = False
     _lock = threading.Lock()
     _min_driving_lanes: float
+    _path_with_junction=False
+    _junction_distance=None
+    _junction_id=None
 
     @staticmethod
     def set_local_planner(plan):
@@ -491,10 +494,39 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         """
         Generate spawn points for the current map
         """
-        spawn_points = list(CarlaDataProvider.get_map(CarlaDataProvider._world).get_spawn_points())
-        CarlaDataProvider._rng.shuffle(spawn_points)
-        CarlaDataProvider._spawn_points = spawn_points
         CarlaDataProvider._spawn_index = 0
+        CarlaDataProvider._spawn_points=[]
+        topology=CarlaDataProvider.get_map(CarlaDataProvider._world).get_topology()
+        road_id_proc=[]
+        for pred, succ in topology:
+            if CarlaDataProvider._path_with_junction and succ.is_junction:
+                if CarlaDataProvider._junction_id is None:
+                    if pred.road_id in road_id_proc:
+                        continue
+                    else:
+                        road_id_proc.append(pred.road_id)
+                        transform=pred.transform
+                        transform.location.z+=5
+                        CarlaDataProvider._spawn_points.append(transform)
+                else:
+                    if succ.junction_id==CarlaDataProvider._junction_id and pred.road_id not in road_id_proc:
+                        road_id_proc.append(pred.road_id)
+                        transform=pred.transform
+                        transform.location.z+=5
+                        CarlaDataProvider._spawn_points.append(transform)
+            elif not CarlaDataProvider._path_with_junction:
+                if succ.road_id in road_id_proc:
+                    continue
+                else:
+                    road_id_proc.append(succ.road_id)
+                    transform=succ.transform
+                    transform.location.z+=5
+                    CarlaDataProvider._spawn_points.append(transform)
+                # spawn_points = list(CarlaDataProvider.get_map(CarlaDataProvider._world).get_spawn_points())
+                # CarlaDataProvider._spawn_points = spawn_points
+
+        CarlaDataProvider._rng.shuffle(CarlaDataProvider._spawn_points)
+
 
     @staticmethod
     def check_road_length(wp, length: float):
@@ -563,7 +595,6 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
     def get_waypoint_by_laneid(lane_num: int):
         if CarlaDataProvider._spawn_points is None:
             CarlaDataProvider.generate_spawn_points()
-
         CarlaDataProvider._spawn_points = [pos for pos in CarlaDataProvider._spawn_points  # pylint: disable=unsubscriptable-object
                         if (
                             len(

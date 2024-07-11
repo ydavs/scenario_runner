@@ -35,8 +35,7 @@ from srunner.osc2_stdlib.modifier import (
     LaneModifier,
     PositionModifier,
     SpeedModifier,
-    TurnModifier,
-    WrongSideModifier,
+    CrossActionModifier,
     RoadActionModifier,
 )
 
@@ -250,6 +249,19 @@ def process_action_modifier(config, modifiers, father_tree):
             LOG_WARNING(
                 f"{npc_name} car will turn towards {turn_side}"
             )
+        
+        if isinstance(modifier, CrossActionModifier):
+            angle = modifier.get_angle()
+            target_speed = modifier.get_speed().gen_physical_value()
+            npc_name = modifier.get_actor_name()
+            actor = CarlaDataProvider.get_actor_by_name(npc_name)
+            continue_drive = WaypointFollower(actor, target_speed=target_speed,cross_angle=angle)
+            father_tree.add_child(continue_drive)
+            car_config = config.get_car_config(npc_name)
+            car_config.set_arg({"cross angle": angle})
+            LOG_WARNING(
+                f"{npc_name} car will move on the wrong side of the road"
+            )
 
 def process_location_modifier(config, modifiers, duration: float, father_tree):
     # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])
@@ -292,6 +304,11 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
         car_name = m.get_actor_name()
         wp = CarlaDataProvider.get_waypoint_by_laneid(m.get_lane_id())
         if wp:
+            if CarlaDataProvider._junction_distance:
+                max_d=wp.get_lane_max_distance()
+                junct_d=CarlaDataProvider._junction_distance.num
+                
+                wp=wp.next(max_d-junct_d)[0]
             actor = CarlaDataProvider.get_actor_by_name(car_name)
             actor_visible = ActorTransformSetter(actor, wp.transform)
             father_tree.add_child(actor_visible)
@@ -966,6 +983,25 @@ class OSC2Scenario(BasicScenario):
                         modifier_ins.set_args(keyword_args)
 
                         action_modifiers.append(modifier_ins)
+                    
+                    elif modifier_name == "cross_action":
+                        modifier_ins = CrossActionModifier(actor, modifier_name)
+                        keyword_args = {}
+                        if isinstance(arguments, list):
+                            arguments = OSC2Helper.flat_list(arguments)
+                            for arg in arguments:
+                                if isinstance(arg, tuple):
+                                    keyword_args[arg[0]] = arg[1]
+                        elif isinstance(arguments, tuple):
+                            keyword_args[arguments[0]] = arguments[1]
+                        else:
+                            raise NotImplementedError(
+                                f"no implentment argument of {modifier_name}"
+                            )
+
+                        modifier_ins.set_args(keyword_args)
+
+                        action_modifiers.append(modifier_ins)
 
                     elif modifier_name == "lane":
                         modifier_ins = LaneModifier(actor, modifier_name)
@@ -1102,13 +1138,12 @@ class OSC2Scenario(BasicScenario):
                     "lane",
                     "position",
                     "orientation",
-                    "take_turn",
                     "acceleration",
                     "keep_lane",
                     "change_speed",
-                    "change_lane"
-                    "wrong_side",
+                    "change_lane",
                     "road_action",
+                    "cross_action"
                 )
             ):
                 line, column = node.get_loc()

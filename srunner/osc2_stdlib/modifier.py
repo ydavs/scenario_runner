@@ -162,6 +162,32 @@ class RoadActionModifier(Modifier):
 
     def get_trigger_point(self) -> str:
         return self.args.get("at", "all")
+class CrossActionModifier(Modifier):
+    def __init__(self, actor_name: str, name: str) -> None:
+        super().__init__(actor_name, name)
+
+    def get_angle(self):
+        if"angle" in self.args.keys():
+            angle=self.args["angle"]
+            if isinstance(angle, Physical):
+                return angle
+            else:
+                print(
+                    "[Error] 'distance' parameter of PositionModifier must be 'Physical' type"
+                )
+                sys.exit(1)
+        else:
+            return None    
+    def get_speed(self):
+        speed = self.args["speed"]
+        if isinstance(speed, Physical):
+            return Physical(speed.gen_single_value(), speed.unit)
+        else:
+            print("[Error] 'speed' parameter of SpeedModifier must be 'Physical' type")
+            sys.exit(1)
+
+    def get_trigger_point(self) -> str:
+        return self.args.get("at", "all")
 
 class OrientationModifier(Modifier):
     # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])

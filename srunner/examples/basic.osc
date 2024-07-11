@@ -42,4 +42,8 @@ actor Crossbike
 actor Woman1
 actor Man1
 actor Barrel
+actor Creta
+actor Mercedes
+actor OlaScooter
+actor OlaScooterCylinder
 
