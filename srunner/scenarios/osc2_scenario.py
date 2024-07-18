@@ -251,7 +251,7 @@ def process_action_modifier(config, modifiers, father_tree):
             )
         
         if isinstance(modifier, CrossActionModifier):
-            angle = modifier.get_angle()
+            angle = modifier.get_angle().gen_physical_value()
             target_speed = modifier.get_speed().gen_physical_value()
             npc_name = modifier.get_actor_name()
             actor = CarlaDataProvider.get_actor_by_name(npc_name)

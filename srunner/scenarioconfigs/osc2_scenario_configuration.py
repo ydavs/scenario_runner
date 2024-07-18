@@ -199,6 +199,7 @@ class OSC2ScenarioConfiguration(ScenarioConfiguration):
 
                     # TODO: Analyzing and setting vehicle configuration parameters requires parsing the keep statement
                     p_ins.set_name(para_name)
+                    self.father_ins.add_other_actors(p_ins)
 
                 if para_type in static_type:  ###################################################
                     vehicle_class = getattr(stationary, para_type)
