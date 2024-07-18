@@ -1,0 +1,54 @@
+import basic.osc
+#video number: 503
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use in this test
+    path.path_min_driving_lanes(3)
+    #path.path_with_junction(junction_id:1,distance:None)         # Path should have at least two lanes
+
+    ego_vehicle: AudiEtron               
+    taxi: Rubicon
+    
+    car1: Mkz2017
+    car2: Mkz2017
+    car3: Model3
+    extra: Model3
+    
+    event start
+    event end
+
+    do serial:
+        spawn: parallel(duration:5s):    
+            ego_vehicle.drive(path) with:
+                speed(20kph)
+                lane(3, at:start)    
+            taxi.drive(path) with:
+                speed(3kph)
+                lane(same_as:ego_vehicle, at:start)
+                position(50m, ahead_of:ego_vehicle, at:start)
+            extra.drive(path) with:
+                speed(0.1kph)
+                lane(left_of:ego_vehicle, at:start)
+                position(100m, behind:ego_vehicle, at:start)
+            car1.drive(path) with:
+                speed(0.1kph)
+                lane(left_of:extra, at:start)
+                position(140m, ahead_of:extra, at:start)
+            car2.drive(path) with:
+                speed(0.1kph)
+                lane(same_as:car1, at:start)
+                position(8m, ahead_of:car1, at:start)
+            car3.drive(path) with:
+                speed(70kph)
+                lane(same_as:car1, at:start)
+                position(45m, behind:car1, at:start)
+
+        slow_down: parallel(duration:3s):
+            ego_vehicle.drive(path) with:
+                speed(10kph)
+            taxi.drive(path)
+            car1.drive(path)
+            car2.drive(path)
+            car3.drive(path) with:
+                speed(10kph)
+            
