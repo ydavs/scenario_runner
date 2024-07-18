@@ -1,0 +1,61 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement cut-out:
+# The stationary vehicle drives in the front, with lead_vehicle behind it and ego_vehicle behind lead.
+# The stationary vehicle stops and the lead_vehicle cuts out suddenly, exposing the stopped vehicle to the ego_vehicle
+# ego_vehicle has to slow down immediately and use emergency brakes to avoid an accident.
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes, otherwise error
+
+    ego_vehicle: Model3
+    lead_vehicle: Creta
+    stationary_vehicle: Model3
+                   
+
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+        spawn: parallel(duration: 7s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(45kph)
+                lane(2, at: start) # left to right: [1..n]
+            lead_vehicle.drive(path) with:
+                speed(45kph)
+                lane(same_as:ego_vehicle, at:start)
+                position(10m, ahead_of:ego_vehicle, at:start)
+            stationary_vehicle.drive(path) with:
+                speed(45kph)
+                lane(same_as:ego_vehicle, at:start)
+                position(25m, ahead_of:ego_vehicle, at:start)
+
+        stop: parallel(duration:3s):
+            #the stationary_vehicle stops suddenly
+            stationary_vehicle.drive(path) with:
+                speed(0.1kph)
+            lead_vehicle.drive(path) with:
+                #the lead vehicle suddenly cuts out exposing the ego_vehicle
+                change_lane(lane_changes:1,side:right)
+                #speed(50kph) not executed!! this line is ignored
+            ego_vehicle.drive(path) with:
+                #ego vehicle slows down
+                speed(32kph)
+
+        sudden_break_ego: parallel(duration:5s):
+            #ego vehicle applies a sudden break
+            stationary_vehicle.drive(path) with:
+                speed(0.1kph)
+            lead_vehicle.drive(path) with:
+                speed(50kph)
+            ego_vehicle.drive(path) with:
+                speed(0.1kph)
+            
+

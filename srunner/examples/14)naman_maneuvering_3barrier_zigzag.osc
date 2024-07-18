@@ -1,0 +1,79 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#Maneuvering with 3 barriers with zigzag driving
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    barrier1: ConcreteBarrier
+    barrier2: ConcreteBarrier
+    barrier3: ConcreteBarrier
+    npc: Model3 #temp vehicle to access lane 3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 6s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(15mps) 
+                lane(1, at:start)
+            npc.drive(path) with:
+                speed(1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(50m, behind:ego_vehicle, at:start)
+            barrier1.walk(path) with:
+                lane(same_as:ego_vehicle, at:start)
+                position(100m, ahead_of: ego_vehicle, at: start)
+            barrier2.walk(path) with:
+                lane(right_of:ego_vehicle, at:start)
+                position(120m, ahead_of: ego_vehicle, at: start)
+            barrier3.walk(path) with:
+                lane(right_of:npc, at:start)
+                position(150m, ahead_of: npc, at: start)
+            
+        slowdown: parallel(duration: 3.5s):
+            #the ego_vehicle slows down for Maneuvering
+            ego_vehicle.drive(path) with:
+                speed(5mps) 
+            barrier1.walk(path)
+            barrier2.walk(path) 
+            barrier3.walk(path)
+            npc.drive(path) with:
+                speed(1mps)
+        lanechange: parallel(duration: 4.5s): #4s next lane change is skipped
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            npc.drive(path) with:
+                speed(1mps)
+        lanechange2: parallel(duration: 5s): #7s unexpected collision 
+            #4s pe bhi collision ho raha hai
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            npc.drive(path) with:
+                speed(1mps)
+        speedup: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            npc.drive(path) with:
+                speed(1mps)
+        

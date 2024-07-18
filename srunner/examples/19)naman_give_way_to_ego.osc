@@ -1,0 +1,62 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+
+#Ego is driving in the rightmost lane when a car ahead of ego 
+#is driving really slow. Ego then flashes the lights to indicate that it wants to overtake. 
+#The car then changes its lanes.
+
+#npc2 is used to simulate traffic
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+
+    npc1: Model3
+    ego_vehicle: Model3
+    npc2: Mkz2017
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 11s):
+            npc1.drive(path) with:
+                speed(10mps)
+                lane(3, at:start)
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+                lane(same_as:npc1, at:start)
+                position(80m, behind:npc1, at:start)
+            npc2.drive(path) with:
+                speed(10mps)
+                lane(left_of:npc1, at:start)
+                position(30m, ahead_of:npc1, at:start)
+        waiting: parallel(duration: 6s):
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            npc1.drive(path) with:
+                speed(10mps)
+            npc2.drive(path) with:
+                speed(10mps)
+        changelane: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            npc1.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            npc2.drive(path) with:
+                speed(10mps)
+        speedup: parallel(duration: 8s):
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+            npc1.drive(path) with:
+                speed(10mps)
+            npc2.drive(path) with:
+                speed(10mps)
+            

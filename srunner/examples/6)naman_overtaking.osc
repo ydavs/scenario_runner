@@ -1,0 +1,108 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement ego vehicle overtaking:
+
+#we have 3 cars:ego, lead1, lead2
+#npc1 is only to simulate traffic
+#NOTE: Creta has a problem in its camera don't make it ego
+#Overtaking 2 vehicles on the same lane when the right lane is free,
+#overtaking 2 vehicles at once
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    lead1_vehicle: Model3
+    lead2_vehicle: Creta
+    npc1: Creta
+    npc2: Model3 #temp
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 10s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+                lane(1, at:start)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(80m, ahead_of:ego_vehicle, at:start)
+            lead2_vehicle.drive(path) with:
+                speed(10mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(120m, ahead_of:ego_vehicle, at:start)
+            npc2.drive(path) with: #only for accessing lane 3
+                speed(0.1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(10m, behind:ego_vehicle, at:start) 
+            npc1.drive(path) with:
+                speed(20mps)
+                # NOTE: right_of_right_of is not supported
+                #lane(3, at:start) NOT ALLOWED
+                lane(right_of:npc2, at:start)
+                position(5m, ahead_of:npc2, at:start)
+        slow_down: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+            npc1.drive(path) with:
+                speed(20mps)  
+            npc2.drive(path) with:
+                speed(0.1mps)
+        lanechange1: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+            npc1.drive(path) with:
+                speed(20mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+        speedup: parallel(duration: 8s):
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps)
+            npc1.drive(path) with:
+                speed(20mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+        lanechange2: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+            npc1.drive(path) with:
+                speed(20mps) 
+            npc2.drive(path) with:
+                speed(0.1mps)
+        speedup: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps)
+            npc1.drive(path) with:
+                speed(20mps)
+            npc2.drive(path) with:
+                speed(0.1mps)

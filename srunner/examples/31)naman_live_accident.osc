@@ -1,0 +1,79 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#live accident is taking place between 2 cars npc1 and npc2, ego stops for the victim’s aid
+# npc3 is moving in the rightmost lane when it suddenly changes lane to the left.
+# it forces npc1 to slow down immediately.
+# npc2 which is right behind npc1 is not attentive and is unable to slow down. Hence an accident occurs.
+#ego stops to help the injured people.
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    npc1: Mkz2017
+    npc2: Creta
+    npc3: Mercedes
+
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(1, at:start)
+            npc1.drive(path) with:
+                speed(15mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(40m, ahead_of: ego_vehicle, at:start)
+            npc2.drive(path) with:
+                speed(15mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(20m, ahead_of: ego_vehicle, at:start)
+            npc3.drive(path) with:
+                speed(15mps)
+                lane(right_of:npc1, at:start)
+                position(20m, ahead_of: npc1, at:start)
+        lanechange: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(15mps)
+            npc3.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+        slowdown: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(7mps)
+            npc2.drive(path) with:
+                speed(15mps)
+            npc3.drive(path) with:
+                speed(15mps)
+        drive_freely: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(2mps)
+            npc1.drive(path) with:
+                speed(0.1mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(15mps)
+        stop_ego:parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                speed(0.1mps)
+            npc1.drive(path) with:
+                speed(0.1mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(15mps)

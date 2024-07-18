@@ -1,0 +1,53 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+
+#we have 3 cars:ego, npc1, npc2
+
+#Emergency stop, as scooter takes a sudden lane change
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    lead_vehicle: Model3
+    npc1: AshokTruck
+    npc2: OlaScooter
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 9s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(13mps) #ego will still overtake, don't worry!
+                lane(1, at:start)
+            npc1.drive(path) with:
+                speed(15mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(50m, ahead_of:ego_vehicle, at:start)
+            npc2.drive(path) with:
+                speed(15mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(70m, ahead_of:ego_vehicle, at:start)
+        sudden_left: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(13mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+        slow_down: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(8mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(15mps)

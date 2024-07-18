@@ -1,0 +1,48 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement Maneuvering with 1 barriers.
+
+# tag::library-physical-angle[]
+type angle is SI(rad: 1)
+unit degree of angle is SI(rad: 1, factor: 57.295779513)
+unit deg    of angle is SI(rad: 1, factor: 57.295779513)
+unit radian of angle is SI(rad: 1, factor: 1)
+unit rad    of angle is SI(rad: 1, factor: 1)
+# end::library-physical-angle[]
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    barrier_vehicle: ConcreteBarrier
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(1, at:start)
+            barrier_vehicle.walk(path) with:
+                lane(same_as:ego_vehicle, at:start)
+                #even if you don't write the next line, the barrier will spawn in the same way, as default angle is 0 only
+                #0 --> horizontal
+                #rad -->degrees only!
+                orientation(yaw:0.0rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                position(100m, ahead_of: ego_vehicle, at: start)
+        lanechange: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            barrier_vehicle.walk(path)
+        move_freely: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            barrier_vehicle.walk(path)

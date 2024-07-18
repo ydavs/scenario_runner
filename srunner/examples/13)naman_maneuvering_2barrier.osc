@@ -1,0 +1,54 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#Maneuvering with 2 barriers in lane 1 and 3.
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    barrier_vehicle1: ConcreteBarrier
+    barrier_vehicle2: ConcreteBarrier
+    npc: Model3 #temp to access lane 3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 5s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(15mps) 
+                lane(1, at:start)
+            npc.drive(path) with: #temp vehicle
+                speed(1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(50m, behind:ego_vehicle, at:start)
+            barrier_vehicle1.walk(path) with:
+                lane(same_as:ego_vehicle, at:start)
+                position(100m, ahead_of: ego_vehicle, at: start)
+            barrier_vehicle2.walk(path) with:
+                lane(right_of:npc, at:start)
+                position(150m, ahead_of: npc, at: start)
+            
+        lanechange: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            barrier_vehicle1.walk(path)
+            barrier_vehicle2.walk(path)
+            npc.drive(path) with:
+                speed(1mps)
+        move_freely: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            barrier_vehicle1.walk(path)
+            barrier_vehicle2.walk(path)
+            npc.drive(path) with:
+                speed(1mps)

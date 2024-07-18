@@ -1,0 +1,82 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+# tag::library-physical-angle[]
+type angle is SI(rad: 1)
+unit degree of angle is SI(rad: 1, factor: 57.295779513)
+unit deg    of angle is SI(rad: 1, factor: 57.295779513)
+unit radian of angle is SI(rad: 1, factor: 1)
+unit rad    of angle is SI(rad: 1, factor: 1)
+# end::library-physical-angle[]
+
+#  Ego is driving in the leftmost lane and there are cows blocking the way, 
+#ego changes lanes to avoid the herd of cows
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use in this test
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+    
+    ego_vehicle: Model3
+    barrier1: Cow
+    barrier2: Cow
+    barrier3: Cow
+    barrier4: Cow
+    barrier5: Cow
+
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+        spawn: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(13mps)
+                lane(1, at: start)
+            barrier1.walk(path) with:
+                lane(same_as:ego_vehicle, at: start)
+                position(80m, ahead_of:ego_vehicle, at:start)
+                orientation(yaw:90rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+            barrier2.walk(path) with:
+                lane(same_as:ego_vehicle, at: start)
+                position(100m, ahead_of:ego_vehicle, at:start)
+                orientation(yaw:220rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+            barrier3.walk(path) with:
+                lane(right_of:ego_vehicle, at: start)
+                position(90m, ahead_of:ego_vehicle, at:start)
+                orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+            barrier4.walk(path) with:
+                lane(right_of:ego_vehicle, at: start)
+                position(110m, ahead_of:ego_vehicle, at:start)
+                orientation(yaw:300rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+        slowdown:parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            barrier4.walk(path)
+        lanechange:parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            barrier4.walk(path)
+        lanechange:parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            barrier4.walk(path)
+        speedup:parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            barrier1.walk(path)
+            barrier2.walk(path)
+            barrier3.walk(path)
+            barrier4.walk(path)

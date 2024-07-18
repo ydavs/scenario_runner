@@ -1,0 +1,93 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#ambulance is behind ego signaling it to give way, 
+#traffic is on right, left and there is a car on the front as well. 
+#Front car goes right, ego speeds up and changes lanes so that ambulance is free.
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    amb: Ambulance
+    npc1: Mercedes
+    npc2: Creta
+    npc3: Model3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 10s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(2, at:start)
+            amb.drive(path) with:
+                speed(15mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(10m, behind:ego_vehicle, at:start)
+            npc1.drive(path) with:
+                speed(15mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(5m, ahead_of:ego_vehicle, at:start)
+            npc2.drive(path) with:
+                speed(15mps)
+                lane(left_of:ego_vehicle, at:start)
+                position(3m, ahead_of:ego_vehicle, at:start)
+            npc3.drive(path) with: 
+                speed(15mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(15m, ahead_of:ego_vehicle, at:start) 
+            
+        lanechange: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(15mps) 
+            npc3.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            amb.drive(path) with:
+                speed(15mps)
+        overtake: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(15mps) 
+            npc3.drive(path) with:
+                speed(15mps)
+            amb.drive(path) with:
+                speed(18mps)
+        lanechange: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(15mps) 
+            npc3.drive(path) with:
+                speed(15mps)
+            amb.drive(path) with:
+                speed(18mps)
+        move_freely: parallel(duration: 9s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(15mps) 
+            npc3.drive(path) with:
+                speed(15mps)
+            amb.drive(path) with:
+                speed(20mps)
+            

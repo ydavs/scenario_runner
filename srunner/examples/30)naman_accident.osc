@@ -1,0 +1,80 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#Accident has happened there is a stopped rotated truck.
+#Ego changes lanes
+
+# tag::library-physical-angle[]
+type angle is SI(rad: 1)
+unit degree of angle is SI(rad: 1, factor: 57.295779513)
+unit deg    of angle is SI(rad: 1, factor: 57.295779513)
+unit radian of angle is SI(rad: 1, factor: 1)
+unit rad    of angle is SI(rad: 1, factor: 1)
+# end::library-physical-angle[]
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    accident: AshokTruck
+    npc1: Mercedes
+    npc2: Model3 #temp vehicle to access lane 3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(1, at:start)
+            accident.walk(path) with:
+                lane(same_as:ego_vehicle, at:start)
+                orientation(yaw:50.0rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                position(140m, ahead_of: ego_vehicle, at: start)
+            npc2.drive(path) with:
+                speed(1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(100m, behind: ego_vehicle, at:start)
+            npc1.drive(path) with:
+                speed(18mps)
+                lane(right_of:npc2, at:start)
+                position(90m, ahead_of: npc2, at:start)
+        slowdown: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(8mps)
+            accident.walk(path)
+            npc2.drive(path) with:
+                speed(1mps)
+            npc1.drive(path) with:
+                speed(18mps)
+        lanechange: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            accident.walk(path)
+            npc2.drive(path) with:
+                speed(1mps)
+            npc1.drive(path) with:
+                speed(18mps)
+        lanechange: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            accident.walk(path)
+            npc2.drive(path) with:
+                speed(1mps)
+            npc1.drive(path) with:
+                speed(18mps)
+        drive_freely: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            accident.walk(path)
+            npc2.drive(path) with:
+                speed(1mps)
+            npc1.drive(path) with:
+                speed(18mps)

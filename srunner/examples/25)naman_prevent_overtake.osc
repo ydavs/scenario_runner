@@ -1,0 +1,128 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement ego vehicle overtaking
+
+
+# A lead vehicle is continuously changing its lanes to prevent the ego vehicle to overtake it.
+#npc1 is to simulate traffic
+#npc2 is a temp car just to access lane 3
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    lead_vehicle: Mercedes
+    npc1: Creta
+    npc2: Model3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 10s):
+
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(1, at:start)
+            lead_vehicle.drive(path) with:
+                speed(10mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(40m, ahead_of:ego_vehicle, at:start)
+            npc2.drive(path) with:
+                speed(1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(100m, behind:ego_vehicle, at:start)
+            npc1.drive(path) with: 
+                speed(15mps)
+                lane(right_of:npc2, at:start)
+                position(120m, ahead_of:npc2, at:start) 
+         
+        lanechange1: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            lead_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange2: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange1: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            lead_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange2: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange1: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            lead_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange2: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange1: parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            lead_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        lanechange2: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+        continue: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(1mps)
+            

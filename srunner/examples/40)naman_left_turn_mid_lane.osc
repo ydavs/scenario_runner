@@ -1,0 +1,55 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#Taking a left turn from the mid lane when there is a car coming from behind in the left lane.
+
+#road_action(speed:40kph, turn:right, wrong_side:false)
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Junction_Map1")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+   # path.path_with_junction() spawns the first vehicle at the beginning of the road
+
+    ego_vehicle: Model3
+    npc1: Model3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+        spawn: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(2, at:start)
+            npc1.drive(path) with:
+                speed(17mps)
+                lane(left_of:ego_vehicle, at:start)
+                position(2m, behind:ego_vehicle, at:start) 
+        slow_down: parallel(duration: 3s):
+            #ego slows down
+            ego_vehicle.drive(path) with:
+                speed(4mps)
+            npc1.drive(path) with:
+                speed(10mps)
+        lanechange: parallel(duration: 6s):
+            #ego changes its lane to come in the leftmost lane
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            npc1.drive(path) with:
+                road_action(speed:8mps, turn:left, wrong_side:false)
+        take_turn: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                road_action(speed:10mps, turn:left, wrong_side:false)
+            npc1.drive(path) with:
+                road_action(speed:8mps, turn:left, wrong_side:false)
+        proceed: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                # can't use the drive function
+                road_action(speed:15mps, turn:left, wrong_side:false)
+            npc1.drive(path) with:
+                road_action(speed:15mps, turn:left, wrong_side:false)
+        

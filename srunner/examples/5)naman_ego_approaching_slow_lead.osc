@@ -1,0 +1,72 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement ego vehicle approaching a slow lead vehicle:
+
+#we have 3 cars:ego, lead, npc1
+#npc2 is only to simulate traffic
+
+#Ego vehicle approaching slow lead vehicle, we have another vehicle behind on the right hence ego waits for it to leave
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3
+    lead_vehicle: Creta
+    npc1: AudiEtron
+    npc2: Mercedes
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 7s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+                lane(1, at:start)
+            lead_vehicle.drive(path) with:
+                speed(5mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(100m, ahead_of:ego_vehicle, at:start)
+            npc1.drive(path) with:
+                speed(20mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(40m, behind:ego_vehicle, at:start)
+             npc2.drive(path) with:
+                speed(20mps)
+                lane(right_of:npc1, at:start)
+                position(39m, ahead_of:npc1, at:start)
+        slow_down1: parallel(duration: 6s):
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            lead_vehicle.drive(path) with:
+                speed(5mps) 
+            npc1.drive(path) with:
+                speed(20mps)
+            npc2.drive(path) with:
+                speed(20mps)
+        lanechange1: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            lead_vehicle.drive(path) with:
+                speed(5mps)
+            npc1.drive(path) with:
+                speed(20mps) 
+            npc2.drive(path) with:
+                speed(20mps)
+        speedup: parallel(duration: 6s):
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+            lead_vehicle.drive(path) with:
+                speed(5mps)
+            npc1.drive(path) with:
+                speed(20mps)
+            npc2.drive(path) with:
+                speed(20mps)

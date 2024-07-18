@@ -1,0 +1,142 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+
+#Ego vehicle is standing in line for a toll gate. Simulating the movement of cars
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3  
+    npc1: Mkz2017
+    npc2: Model3
+    npc3: Model3
+    npc4: Mkz2017
+    npc5: Model3
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 9s):
+            ego_vehicle.drive(path) with:
+                speed(8mps)
+                lane(2, at:start)
+            npc1.drive(path) with:
+                speed(0.1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(85m, ahead_of:ego_vehicle, at:start)
+            npc2.drive(path) with:
+                speed(0.1mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(75m, ahead_of:ego_vehicle, at:start)
+            npc3.drive(path) with:
+                speed(0.1mps)
+                lane(left_of:ego_vehicle, at:start)
+                position(85m, ahead_of:ego_vehicle, at:start)
+            npc4.drive(path) with:
+                speed(0.1mps)
+                lane(left_of:ego_vehicle, at:start)
+                position(75m, ahead_of:ego_vehicle, at:start)
+            npc5.drive(path) with:
+                speed(0.1mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(85m, ahead_of:ego_vehicle, at:start)
+        bring_in_line: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(3mps)
+            npc1.drive(path) with:
+                speed(0.1mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(0.1mps)
+            npc4.drive(path) with:
+                speed(0.1mps)
+            npc5.drive(path) with:
+                speed(0.1mps)
+        stop: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(0.1mps)
+            npc1.drive(path) with:
+                speed(0.1mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(0.1mps)
+            npc4.drive(path) with:
+                speed(0.1mps)
+            npc5.drive(path) with:
+                speed(0.1mps)
+        right_lane_proceed: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(0.1mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(2mps)
+            npc3.drive(path) with:
+                speed(0.1mps)
+            npc4.drive(path) with:
+                speed(0.1mps)
+            npc5.drive(path) with:
+                speed(0.1mps)
+        left_lane_proceed: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(0.1mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(15mps)
+            npc4.drive(path) with:
+                speed(2mps)
+            npc5.drive(path) with:
+                speed(0.1mps)
+        same_lane_proceed: parallel(duration: 5s):
+            ego_vehicle.drive(path) with:
+                speed(2mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(15mps)
+            npc4.drive(path) with:
+                speed(0.1mps)
+            npc5.drive(path) with:
+                speed(15mps)
+        waiting: parallel(duration: 5s): #wait likhne pe error ata hai
+            ego_vehicle.drive(path) with:
+                speed(0.1mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(15mps)
+            npc4.drive(path) with:
+                speed(0.1mps)
+            npc5.drive(path) with:
+                speed(15mps)
+        same_lane_proceed: parallel(duration: 10s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            npc1.drive(path) with:
+                speed(15mps)
+            npc2.drive(path) with:
+                speed(0.1mps)
+            npc3.drive(path) with:
+                speed(15mps)
+            npc4.drive(path) with:
+                speed(0.1mps)
+            npc5.drive(path) with:
+                speed(15mps)

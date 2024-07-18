@@ -1,0 +1,77 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement cut-in:
+
+#we have 3 cars:ego, lead, and cutting
+#2 cars ego and lead are on the same lane with lead vehicle in the front
+#while the cutting vehicle is on the left lane
+#suddenly the cutting vehicle cuts-in between the ego and lead causing ego to slow down to avoid collision
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(2)         # Path should have at least two lanes
+
+    ego_vehicle: Model3
+    lead_vehicle: Mkz2017
+    cutting_vehicle: Mercedes
+                   
+
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+        spawn: parallel(duration: 7s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(45kph)
+                lane(2, at: start) # left to right: [1..n]
+            lead_vehicle.drive(path) with:
+                speed(45kph)
+                lane(same_as:ego_vehicle, at:start)
+                position(25m, ahead_of:ego_vehicle, at:start)
+            cutting_vehicle.drive(path) with:
+                speed(45kph)
+                lane(left_of:ego_vehicle, at:start)
+                position(10m, behind:ego_vehicle, at:start)
+
+        get_ahead: parallel(duration:5s):
+            #the cutting vehicle gets ahead of the ego vehicle
+            #lead_vehicle and ego vehicle remain the same
+            lead_vehicle.drive(path) with:
+                speed(45kph)
+            ego_vehicle.drive(path) with:
+                speed(45kph)
+            #The cutting vehicle increases its speed
+            cutting_vehicle.drive(path) with:
+                speed(58kph)
+        cut_in: parallel(duration:2s):
+            lead_vehicle.drive(path) with:
+                speed(45kph)
+            ego_vehicle.drive(path) with:
+                speed(45kph)
+            #cutting_vehicle joins lane 2 in between others!
+            cutting_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+        control_speed:parallel(duration:3s)
+            #the cutting_vehicle slows down to avoid collision with the lead_vehicle
+            cutting_vehicle.drive(path) with:
+                speed(45kph)
+            ego_vehicle.drive(path) with:
+                speed(45kph)
+            lead_vehicle.drive(path) with:
+                speed(45kph)
+        slow_down:parallel(duration:3s)
+            #the ego_vehicle slows down a little to have some gap from the cutting vehicle
+            cutting_vehicle.drive(path) with:
+                speed(45kph)
+            ego_vehicle.drive(path) with:
+                speed(35kph)
+            lead_vehicle.drive(path) with:
+                speed(45kph)
+

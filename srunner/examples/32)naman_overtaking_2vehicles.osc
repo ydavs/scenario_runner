@@ -1,0 +1,83 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+#scenario to implement ego vehicle overtaking:
+
+#we have 3 cars:ego, lead1, lead2
+
+#Overtaking 2 vehicles in lanes 1,2 from Lane 3  -->lane 1 is the leftmost lane
+
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+    ego_vehicle: Model3
+    lead1_vehicle: Model3
+    lead2_vehicle: Mercedes 
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 10s):
+            #the 3 vehicles are spawned and begin their drive
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+                lane(1, at:start)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(60m, ahead_of:ego_vehicle, at:start)
+            lead2_vehicle.drive(path) with:
+                speed(10mps)
+                lane(right_of:ego_vehicle, at:start)
+                position(80m, ahead_of:ego_vehicle, at:start)
+            
+        lanechange1: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+        drive_freely:parallel(duration: 2s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+        lanechange2: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:right)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+        speedup: parallel(duration: 4s):
+            ego_vehicle.drive(path) with:
+                speed(20mps)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps)
+        lanechange: parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 
+        drive_freely:parallel(duration: 3s):
+            ego_vehicle.drive(path) with:
+                speed(15mps)
+            lead1_vehicle.drive(path) with:
+                speed(10mps)
+            lead2_vehicle.drive(path) with:
+                speed(10mps) 

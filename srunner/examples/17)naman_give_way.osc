@@ -1,0 +1,59 @@
+# Made by Naman Singh, July 2024
+
+import basic.osc
+
+
+#Ego is driving in the rightmost lane when a car behind ego indicates that it wants to overtake. Ego has to change lanes
+#npc2 is used to simulate traffic
+
+scenario top:
+    path: Path                      # A path in the map
+    path.set_map("Highway_Map_Light")    # specify map to use
+    path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
+
+
+    ego_vehicle: Model3
+    npc1: Mercedes
+    npc2: Mkz2017
+    
+    event start
+    event end
+    event left
+    event right
+
+    do serial:
+
+        spawn: parallel(duration: 11s):
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+                lane(3, at:start)
+            npc1.drive(path) with:
+                speed(20mps)
+                lane(same_as:ego_vehicle, at:start)
+                position(80m, behind:ego_vehicle, at:start)
+            npc2.drive(path) with:
+                speed(10mps)
+                lane(left_of:ego_vehicle, at:start)
+                position(30m, ahead_of:ego_vehicle, at:start)
+        waiting: parallel(duration: 6s):
+            npc1.drive(path) with:
+                speed(10mps)
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            npc2.drive(path) with:
+                speed(10mps)
+        changelane: parallel(duration: 4s):
+            npc1.drive(path) with:
+                speed(10mps)
+            ego_vehicle.drive(path) with:
+                change_lane(lane_changes:1,side:left)
+            npc2.drive(path) with:
+                speed(10mps)
+        speedup: parallel(duration: 8s):
+            npc1.drive(path) with:
+                speed(20mps)
+            ego_vehicle.drive(path) with:
+                speed(10mps)
+            npc2.drive(path) with:
+                speed(10mps)
+            
