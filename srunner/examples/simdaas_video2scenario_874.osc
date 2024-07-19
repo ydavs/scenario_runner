@@ -14,11 +14,11 @@ scenario top:
     path.path_min_driving_lanes(3)
     #path.path_with_junction(junction_id:None,distance:None)         # Path should have at least two lanes
 
-    greenTruck: AshokTruck
-    npc: Mkz2017
-    npc2: Model3
+    greenTruck: Bus
+    npc: Mercedes
+    npc2: Creta
     npc3: Model3
-    npc4: Mkz2017               # white car behind green truck
+    npc4: AudiEtron               # white car behind green truck
     ego_vehicle: AudiEtron               
 
     event start
@@ -33,11 +33,11 @@ scenario top:
                 lane(2, at: start)
             npc.drive(path) with:  ## front car with same speed
                 speed(50kph)
-                lane(same_as:ego_vehicle, at: start) ## does same_as work?
+                lane(same_as:ego_vehicle, at: start)
                 position(20m, ahead_of:ego_vehicle, at: start)
             npc2.drive(path) with:
                 speed(45kph)
-                lane(same_as:ego_vehicle, at: start)
+                lane(right_of:ego_vehicle, at: start)
                 position(100m, ahead_of:ego_vehicle, at: start)
             npc3.drive(path) with:
                 speed(45kph)
@@ -46,5 +46,5 @@ scenario top:
             greenTruck.drive(path) with:
                 road_action(speed:40kph,wrong_side:true)
                 lane(left_of:ego_vehicle, at: start)
-                orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
-                position(130m, ahead_of:ego_vehicle, at: start)
+                orientation(yaw:185rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                position(100m, ahead_of:ego_vehicle, at: start)

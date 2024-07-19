@@ -15,8 +15,8 @@ scenario top:
     #path.path_with_junction(junction_id:1,distance:None)         # Path should have at least two lanes
 
     ego_vehicle: AudiEtron               
-    nearbyCar: Mkz2017
-    bus: AshokTruckLoaded
+    nearbyCar: AudiEtron
+    bus: Bus
     oppositeCar: Model3
     
     event start
@@ -24,29 +24,30 @@ scenario top:
 
     do serial:
 
-        spawn: parallel(duration:3s):
+        spawn: parallel(duration:4s):
             ego_vehicle.drive(path) with:
                 speed(30kph)
                 lane(3, at: start)
             nearbyCar.drive(path) with:
-                speed(30kph)
+                speed(37kph)
                 lane (same_as: ego_vehicle, at:start)
-                position(20m, ahead_of:ego_vehicle, at:start)
+                position(16m, ahead_of:ego_vehicle, at:start)
+                #orientation(yaw:-20rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
             bus.drive(path) with:
                 speed(60kph)
                 lane(same_as: ego_vehicle, at:start)
                 position(50m, ahead_of:ego_vehicle, at:start)
             oppositeCar.drive(path) with:
-                road_action(speed:25kph, wrong_side:true)
+                road_action(speed:55kph, wrong_side:true)
                 lane(left_of: ego_vehicle, at:start)
-                position(90m, ahead_of:ego_vehicle, at:start)
+                position(98m, ahead_of:ego_vehicle, at:start)
                 orientation(yaw:180rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
 
-        lane_change: parallel(duration:5s):
+        lane_change: parallel(duration:4s):
             bus.drive(path)
             ego_vehicle.drive(path)
             oppositeCar.drive(path) with:
                 road_action(speed:25kph, wrong_side:true)
             nearbyCar.drive(path) with:
-                speed(25kph)
+                speed(30kph)
                 lane(left_of: ego_vehicle, at: end)

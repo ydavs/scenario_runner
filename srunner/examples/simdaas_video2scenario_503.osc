@@ -7,10 +7,10 @@ scenario top:
     #path.path_with_junction(junction_id:1,distance:None)         # Path should have at least two lanes
 
     ego_vehicle: AudiEtron               
-    taxi: Rubicon
+    taxi: IndianTaxi
     
-    car1: Mkz2017
-    car2: Mkz2017
+    car1: Mercedes
+    car2: Mercedes
     car3: Model3
     extra: Model3
     
@@ -20,7 +20,7 @@ scenario top:
     do serial:
         spawn: parallel(duration:5s):    
             ego_vehicle.drive(path) with:
-                speed(20kph)
+                speed(25kph)
                 lane(3, at:start)    
             taxi.drive(path) with:
                 speed(3kph)

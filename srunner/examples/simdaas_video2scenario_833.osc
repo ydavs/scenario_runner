@@ -14,11 +14,11 @@ scenario top:
     path.path_min_driving_lanes(3)
     #path.path_with_junction(junction_id:1,distance:None)         # Path should have at least two lanes
 
-    npc: AshokTruck  # we need bus for this scenario
-    npc2: AshokTruck
+    npc: Bus  # we need bus for this scenario
+    npc2: Bus
     npc3: Model3
     npc4: OlaScooter
-    npc5: Mkz2017
+    npc5: Model3
     npc6: AudiEtron               # ego car
     ego_vehicle: AudiEtron               # The other car
 
@@ -40,7 +40,7 @@ scenario top:
                 lane(right_of:ego_vehicle, at: start)
                 position(40m, ahead_of:ego_vehicle, at: start)
             npc4.drive(path) with:
-                speed(15kph)
+                speed(20kph)
                 lane(right_of:npc2, at: start)
                 position(13m, ahead_of:npc2, at: start)
             npc3.drive(path) with:
@@ -59,8 +59,8 @@ scenario top:
             ego_vehicle.drive(path)
             npc.drive(path)
             npc2.drive(path) with:
-                speed(30kph)
-                lane(right_of:npc2, at:end)
+                #speed(30kph)
+                lane(right_of:npc, at:end)
             npc4.drive(path) with:
                 speed(23kph)
             npc3.drive(path)

@@ -16,7 +16,7 @@ scenario top:
 
     ego_vehicle: AudiEtron               
     
-    car1: Mkz2017
+    car1: Model3
     car2: Creta
     
     
@@ -29,16 +29,16 @@ scenario top:
             
             ego_vehicle.drive(path) with:
                 speed(20kph)
-                lane(2, at:start)
+                lane(3, at:start)
             
             car1.drive(path) with:
-                speed(20kph)
+                speed(15kph)
                 lane(left_of:ego_vehicle, at:start)
-                position(8m, ahead_of:ego_vehicle, at:start)
-                orientation(yaw:-20rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                position(10m, ahead_of:ego_vehicle, at:start)
+                orientation(yaw:-30rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
             
             car2.drive(path) with:
-                speed(15kph)
+                speed(20kph)
                 lane(same_as:ego_vehicle, at:start)
                 position(7m, ahead_of:ego_vehicle, at:start)
             
@@ -49,7 +49,7 @@ scenario top:
                 lane(same_as:ego_vehicle, at:end)    
             car2.drive(path) with:
                 speed(20kph)
-        #brake: parallel(duration:1s):
+        #brake: parallel(duration:0.25s):
             #ego_vehicle.drive(path) with:
                 #speed(1kph)
             #car1.drive(path) with:
