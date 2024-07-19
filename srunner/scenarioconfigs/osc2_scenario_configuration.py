@@ -34,7 +34,7 @@ from srunner.tools.osc2_helper import OSC2Helper
 
 vehicle_type = ["Car", "Model3", "Mkz2017", "Rubicon", "Mercedes", "Harley", "Creta", "AudiEtron",
                 "OlaScooter", "OlaScooterLadder", "OlaScooterCylinder", "AshokTruck" ,"AshokTruckLoaded", "Ambulance",
-                "Auto"]
+                "Auto", "IndianTaxi", "Bus"]
 pedestrian_type = ["Man1", "Woman1"]
 static_type = ["Barrel", "ConcreteBarrier", "TrafficCone", "Newspaper", "Cow", "Cow2", "Cow3", "Doberman", "Terrier"]
 

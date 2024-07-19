@@ -117,10 +117,12 @@ class CitroenC3(Car):
     def __init__(self) -> None:
         super().__init__()
         self.set_model("CitroenC3")
+
 class DodgeCgarge(Car):
     def __init__(self) -> None:
         super().__init__()
         self.set_model("DodgeCgarge")
+
 class LinkcoInMKZ2017(Car):
     def __init__(self) -> None:
         super().__init__()
@@ -131,6 +133,15 @@ class NissanMicra(Car):
         super().__init__()
         self.set_model("NissanMicra")
 
+class IndianTaxi(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("IndianTaxi")
+
+class Bus(Car):
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_model("Bus")
 
 class NissanPatrol(Car):
     def __init__(self) -> None:

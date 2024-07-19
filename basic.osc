@@ -34,6 +34,8 @@ modifier Path.set_map
 modifier Path.path_min_driving_lanes
 actor Model3
 actor Rubicon
+actor IndianTaxi
+actor Bus
 actor Carlacola
 actor Firetruck
 actor A2
