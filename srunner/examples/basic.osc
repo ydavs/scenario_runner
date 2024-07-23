@@ -34,11 +34,6 @@ modifier Path.set_map
 modifier Path.path_min_driving_lanes
 actor Model3
 actor Rubicon
-actor Carlacola
-actor Firetruck
-actor A2
-actor Ninja
-actor Crossbike
 actor Woman1
 actor Man1
 actor Barrel
@@ -46,4 +41,6 @@ actor Creta
 actor Mercedes
 actor OlaScooter
 actor OlaScooterCylinder
+actor Bus
+actor IndianTaxi
 

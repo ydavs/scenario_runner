@@ -37,7 +37,7 @@ scenario top:
                 position(100m, ahead_of: ego_vehicle, at: start)
             barrier2.walk(path) with:
                 lane(right_of:ego_vehicle, at:start)
-                position(120m, ahead_of: ego_vehicle, at: start)
+                position(130m, ahead_of: ego_vehicle, at: start)
             barrier3.walk(path) with:
                 lane(right_of:npc, at:start)
                 position(150m, ahead_of: npc, at: start)
@@ -59,7 +59,7 @@ scenario top:
             barrier3.walk(path)
             npc.drive(path) with:
                 speed(1mps)
-        lanechange2: parallel(duration: 5s): #7s unexpected collision 
+        lanechange2: parallel(duration: 5.5s): #7s unexpected collision 
             #4s pe bhi collision ho raha hai
             ego_vehicle.drive(path) with:
                 change_lane(lane_changes:1,side:left)

@@ -14,10 +14,10 @@ scenario top:
     path.path_min_driving_lanes(3)         # Path should have at least 3 lanes
 
     ego_vehicle: Model3  
-    npc1: Mkz2017
+    npc1: Mercedes
     npc2: Model3
     npc3: Model3
-    npc4: Mkz2017
+    npc4: AudiEtron
     npc5: Model3
     
     event start
@@ -58,7 +58,7 @@ scenario top:
                 speed(0.1mps)
             npc4.drive(path) with:
                 speed(0.1mps)
-        lanechange: parallel(duration: 5s):
+        lanechange: parallel(duration: 6s):
             ego_vehicle.drive(path) with:
                 change_lane(lane_changes:1,side:right)
             npc1.drive(path) with:
@@ -69,7 +69,7 @@ scenario top:
                 speed(0.1mps)
             npc4.drive(path) with:
                 speed(0.1mps)
-        get_in_line: parallel(duration: 2s):
+        get_in_line: parallel(duration: 1s):
             ego_vehicle.drive(path) with:
                 speed(4mps)
             npc1.drive(path) with:

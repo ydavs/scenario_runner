@@ -1,0 +1,51 @@
+import basic.osc
+
+scenario dut.ego_multiple_overtaking:
+
+    ego_vehicle: Model3
+    turning_vehicle: AudiEtron
+
+    do serial:
+        get_ahead: parallel(duration: 2.5s):
+            ego_vehicle.drive() with:
+                lane(2)
+                speed(5kph, at:start)
+
+        slow_down: parallel(duration: 1.5s):
+            ego_vehicle.drive() with:
+                lane(2)
+                speed(0kph, at:end)
+            turning_vehicle.drive() with:
+                orientation(yaw: [60deg..80deg], relative_to: ego_vehicle, measure_by: length_to_lenght)
+                lane(left_of: ego_vehicle, at:start)
+                speed(5kph, at:start)
+                speed(0kph, at:end)
+
+scenario top:
+
+    path: Path
+    path.set_map("Junction_Map1")
+    path.path_min_driving_lanes(2)
+
+    event start
+    event end
+
+    ego_vehicle: Model3
+    turning_vehicle: AudiEtron
+    standing_vehicles: single_lane_vehicle_group
+
+    for v in standing_vehicles:
+        keep(v.category in [Rubicon, truck])
+        keep(v.speed == 0)
+
+    do serial:
+        initial: parallal(duration: 0.1s):
+            ego_vehicle.drive() with:
+                lane(1, at:start)
+                speed(15kph, at:start)
+
+            standing_vehicles.drive() with:
+                lane(left_of: ego_vehicle, at:start)
+                lateral(1m, side_of: ego_vehicle, side: side_right_left)
+
+        dut.ego_multiple_overtaking()

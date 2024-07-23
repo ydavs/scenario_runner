@@ -15,8 +15,8 @@ scenario top:
 
     ego_vehicle: Model3  
     lead1_vehicle: Model3
-    lead2_vehicle: Mkz2017
-    npc: Mkz2017
+    lead2_vehicle: AudiEtron
+    npc: Mercedes
     npc2: Creta
     
     event start

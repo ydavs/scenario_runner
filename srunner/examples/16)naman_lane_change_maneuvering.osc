@@ -30,7 +30,7 @@ scenario top:
             npc1.drive(path) with:
                 speed(15mps)
                 lane(same_as:ego_vehicle, at:start)
-                position(80m, ahead_of:ego_vehicle, at:start)
+                position(83m, ahead_of:ego_vehicle, at:start)
             npc2.drive(path) with:
                 speed(15mps)
                 lane(right_of:ego_vehicle, at:start)

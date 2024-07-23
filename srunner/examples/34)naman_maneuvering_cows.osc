@@ -59,16 +59,9 @@ scenario top:
             barrier2.walk(path)
             barrier3.walk(path)
             barrier4.walk(path)
-        lanechange:parallel(duration: 2s):
+        lanechange:parallel(duration: 5s):
             ego_vehicle.drive(path) with:
-                change_lane(lane_changes:1,side:right)
-            barrier1.walk(path)
-            barrier2.walk(path)
-            barrier3.walk(path)
-            barrier4.walk(path)
-        lanechange:parallel(duration: 3s):
-            ego_vehicle.drive(path) with:
-                change_lane(lane_changes:1,side:right)
+                change_lane(lane_changes:2,side:right)
             barrier1.walk(path)
             barrier2.walk(path)
             barrier3.walk(path)
