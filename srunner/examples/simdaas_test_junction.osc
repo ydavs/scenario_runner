@@ -25,9 +25,9 @@ scenario top:
     event left
     event right
     do serial:
-        spawn: parallel(duration:40s):
+        spawn: parallel(duration:20s):
             ego_vehicle.drive(path) with:
-                speed(0.2kph)
+                speed(10kph)
                 #road_action(speed:20kph,turn:straight)
                 lane(4, at: start)
             npc.drive(path) with:

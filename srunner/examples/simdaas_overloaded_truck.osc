@@ -6,7 +6,7 @@ scenario top:
     path.path_min_driving_lanes(3)         # Path should have at least two lanes
 
     ego_vehicle: Model3
-    npc: Model3                 
+    npc: AshokTruck                 
 
     event start
     event end

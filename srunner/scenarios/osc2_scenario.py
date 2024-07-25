@@ -307,8 +307,7 @@ def process_location_modifier(config, modifiers, duration: float, father_tree):
             if CarlaDataProvider._junction_distance:
                 max_d=wp.get_lane_max_distance()
                 junct_d=CarlaDataProvider._junction_distance.num
-                
-                wp=wp.next(max_d-junct_d)[0]
+                wp=wp.next(max_d-junct_d)[0] if junct_d<=max_d else wp
             actor = CarlaDataProvider.get_actor_by_name(car_name)
             actor_visible = ActorTransformSetter(actor, wp.transform)
             father_tree.add_child(actor_visible)

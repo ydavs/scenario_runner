@@ -10,13 +10,14 @@ unit rad    of angle is SI(rad: 1, factor: 1)
 
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Junction_Map1")    # specify map to use in this test
-    path.path_min_driving_lanes(3)
-    path.path_with_junction(junction_id:4,distance:90m)         # Path should have at least two lanes
+    path.set_map("Vshape_LHD1")    # specify map to use in this test
+    path.path_min_driving_lanes(1)
+    path.path_with_junction(junction_id:None,distance:None)         # Path should have at least two lanes
 
-    npc: Mkz2017
-    npc2: Mkz2017
-    npc3: OlaScooter          
+    npc: Mercedes
+    npc2: Mercedes
+    npc3: OlaScooter
+    npc4: AudiEtron       
     ego_vehicle: AudiEtron               
 
     event start
@@ -41,6 +42,10 @@ scenario top:
                 speed(22kph)
                 lane(right_of:ego_vehicle, at:start)
                 position(5m, ahead_of:ego_vehicle, at:start)
+            npc4.drive(path) with:
+                speed(22kph)
+                lane(same_as:ego_vehicle, at:start)
+                position(10m, ahead_of:ego_vehicle, at:start)
         switch: parallel(duration:10s):
             npc2.drive(path)
             ego_vehicle.drive(path) with:
@@ -50,3 +55,4 @@ scenario top:
             npc3.drive(path) with:
                 speed(20kph)
                 lane(right_of: npc3, at: end)
+            npc4.drive(path)

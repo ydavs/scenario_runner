@@ -506,21 +506,21 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
                     else:
                         road_id_proc.append(pred.road_id)
                         transform=pred.transform
-                        transform.location.z+=5
+                        #transform.location.z+=5
                         CarlaDataProvider._spawn_points.append(transform)
                 else:
                     if succ.junction_id==CarlaDataProvider._junction_id and pred.road_id not in road_id_proc:
                         road_id_proc.append(pred.road_id)
                         transform=pred.transform
-                        transform.location.z+=5
+                        #transform.location.z+=5
                         CarlaDataProvider._spawn_points.append(transform)
             elif not CarlaDataProvider._path_with_junction:
                 if succ.road_id in road_id_proc:
                     continue
                 else:
-                    road_id_proc.append(succ.road_id)
-                    transform=succ.transform
-                    transform.location.z+=5
+                    road_id_proc.append(pred.road_id)
+                    transform=pred.transform
+                    #transform.location.z+=5
                     CarlaDataProvider._spawn_points.append(transform)
                 # spawn_points = list(CarlaDataProvider.get_map(CarlaDataProvider._world).get_spawn_points())
                 # CarlaDataProvider._spawn_points = spawn_points
@@ -772,6 +772,8 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         if random_location:
             actor = None
             while not actor:
+                # sp=list(CarlaDataProvider.get_map(CarlaDataProvider._world).get_spawn_points())
+                # spawn_point = CarlaDataProvider._rng.choice(sp)
                 spawn_point = CarlaDataProvider._rng.choice(CarlaDataProvider._spawn_points)
                 actor = CarlaDataProvider._world.try_spawn_actor(actor_description, spawn_point)
 
