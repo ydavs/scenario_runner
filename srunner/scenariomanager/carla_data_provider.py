@@ -496,35 +496,15 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         """
         CarlaDataProvider._spawn_index = 0
         CarlaDataProvider._spawn_points=[]
-        topology=CarlaDataProvider.get_map(CarlaDataProvider._world).get_topology()
-        road_id_proc=[]
-        for pred, succ in topology:
-            if CarlaDataProvider._path_with_junction and succ.is_junction:
-                if CarlaDataProvider._junction_id is None:
-                    if pred.road_id in road_id_proc:
-                        continue
-                    else:
-                        road_id_proc.append(pred.road_id)
-                        transform=pred.transform
-                        #transform.location.z+=5
-                        CarlaDataProvider._spawn_points.append(transform)
-                else:
-                    if succ.junction_id==CarlaDataProvider._junction_id and pred.road_id not in road_id_proc:
-                        road_id_proc.append(pred.road_id)
-                        transform=pred.transform
-                        #transform.location.z+=5
-                        CarlaDataProvider._spawn_points.append(transform)
-            elif not CarlaDataProvider._path_with_junction:
-                if succ.road_id in road_id_proc:
-                    continue
-                else:
-                    road_id_proc.append(pred.road_id)
-                    transform=pred.transform
-                    #transform.location.z+=5
-                    CarlaDataProvider._spawn_points.append(transform)
+
+        
                 # spawn_points = list(CarlaDataProvider.get_map(CarlaDataProvider._world).get_spawn_points())
                 # CarlaDataProvider._spawn_points = spawn_points
-
+        map=CarlaDataProvider.get_map(CarlaDataProvider._world)
+        waypoints=map.generate_waypoints(15.0)
+        # waypoints2=map.get_spawn_points(waypoints)
+        for wp in waypoints:
+            CarlaDataProvider._spawn_points.append(wp.transform)
         CarlaDataProvider._rng.shuffle(CarlaDataProvider._spawn_points)
 
 
@@ -590,12 +570,32 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
     def get_road_lane_cnt(wp):
         lanes = CarlaDataProvider.get_road_lanes(wp)
         return len(lanes)
-
+    
+    @staticmethod
+    def junction_check():
+        valid_wp=[]
+        topology=CarlaDataProvider.get_map(CarlaDataProvider._world).get_topology()
+        road_id_proc=[]
+        for pred, succ in topology:
+            if CarlaDataProvider._path_with_junction and succ.is_junction:
+                if CarlaDataProvider._junction_id is None:
+                    if pred.road_id in road_id_proc:
+                        continue
+                    else:
+                        road_id_proc.append(pred.road_id)
+                        valid_wp.append(pred.next(1)[0].transform)
+                else:
+                    if succ.junction_id==CarlaDataProvider._junction_id and pred.road_id not in road_id_proc:
+                        road_id_proc.append(pred.road_id)
+                        valid_wp.append(pred.next(1)[0].transform)
+        return valid_wp if len(valid_wp)!=0 else CarlaDataProvider._spawn_points
+        
     @staticmethod
     def get_waypoint_by_laneid(lane_num: int):
         if CarlaDataProvider._spawn_points is None:
             CarlaDataProvider.generate_spawn_points()
-        CarlaDataProvider._spawn_points = [pos for pos in CarlaDataProvider._spawn_points  # pylint: disable=unsubscriptable-object
+        valid_wp=CarlaDataProvider.junction_check()
+        valid_wp = [pos for pos in valid_wp  # pylint: disable=unsubscriptable-object
                         if (
                             len(
                                 CarlaDataProvider.get_road_lanes(
@@ -612,16 +612,16 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         
         #TODO: Instead of moving spawn index to gv.SEED instead move it to first and send everything before it to end of  the list
         if gv.SEED > 0:
-            CarlaDataProvider._spawn_points.extend(CarlaDataProvider._spawn_points[:gv.SEED])
-            CarlaDataProvider._spawn_points = CarlaDataProvider._spawn_points[gv.SEED:]
+            valid_wp.extend(valid_wp[:gv.SEED])
+            valid_wp = valid_wp[gv.SEED:]
 
-        if CarlaDataProvider._spawn_index >= len(CarlaDataProvider._spawn_points):
+        if CarlaDataProvider._spawn_index >= len(valid_wp):
             print("No more spawn points to use")
             return None
         # else:
         while True:
             # pos = spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
-            pos = CarlaDataProvider._spawn_points[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
+            pos = valid_wp[CarlaDataProvider._spawn_index]  # pylint: disable=unsubscriptable-object
             CarlaDataProvider._spawn_index += 1
             wp = CarlaDataProvider.get_map().get_waypoint(pos.location, project_to_road=True, lane_type=limulator.LaneType.Driving)
 

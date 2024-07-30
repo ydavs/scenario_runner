@@ -27,7 +27,7 @@ scenario top:
     do serial:
         spawn: parallel(duration:20s):
             ego_vehicle.drive(path) with:
-                speed(10kph)
+                speed(0.1kph)
                 #road_action(speed:20kph,turn:straight)
                 lane(4, at: start)
             npc.drive(path) with:
