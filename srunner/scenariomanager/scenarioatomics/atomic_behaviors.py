@@ -31,6 +31,9 @@ import networkx
 
 # @comment: replace with our api
 import sys
+
+import srunner.tools.sensor_helper
+
 sys.path.append(r"C:\Users\Sourav\Desktop\Limulator\PythonAPI\carla")
 
 import limulator
@@ -2783,9 +2786,7 @@ class WaypointFollower(AtomicBehavior):
         else:
             self._target_speed = self._target_speed
 
-        # @comment: provide and uncomment
-        if False:
-        # if isinstance(actor, carla.Walker):
+        if isinstance(actor, limulator.Walker):
             self._local_planner_dict[actor] = "Walker"
             if self._plan is not None:
                 if isinstance(self._plan[0], limulator.Location):
@@ -2857,8 +2858,7 @@ class WaypointFollower(AtomicBehavior):
             if actor is not None and actor.is_alive and local_planner is not None:
                 # Check if the actor is a vehicle/bike
                 # @comment: No walkers for now
-                # if not isinstance(actor, carla.Walker):
-                if True:
+                if not isinstance(actor, limulator.Walker):
                     control = local_planner.run_step(debug=False)
                     if self._avoid_collision and detect_lane_obstacle(actor):
                         control.throttle = 0.0
@@ -3136,6 +3136,10 @@ class ActorTransformSetter(AtomicBehavior):
         if self._actor.is_alive:
             self._actor.set_target_velocity(limulator.Vector3D(0, 0, 0))
             self._actor.set_target_angular_velocity(limulator.Vector3D(0, 0, 0))
+
+            if isinstance(self._actor, limulator.Walker):
+                self._transform.location.z = self._transform.location.z + 1.5
+
             self._actor.set_transform(self._transform)
             print(f'Setting actor transform setter at {self._transform}')
         super(ActorTransformSetter, self).initialise()

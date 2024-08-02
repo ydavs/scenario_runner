@@ -77,6 +77,10 @@ class Pedestrian:
         ret = carla_provider.CarlaDataProvider.get_transform(actor)
         return ret
 
+class Man01(Pedestrian):
+    def __init__(self) -> None:
+        super().__init__("BP_Man01_6701")
+
 
 class Man1(Pedestrian):
     def __init__(self) -> None:

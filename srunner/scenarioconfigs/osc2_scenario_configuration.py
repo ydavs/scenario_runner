@@ -32,10 +32,10 @@ from srunner.scenariomanager.carla_data_provider import CarlaDataProvider
 # OSC2
 from srunner.tools.osc2_helper import OSC2Helper
 
-vehicle_type = ["Car", "Model3", "Mkz2017", "Rubicon", "Mercedes", "Harley", "Creta", "AudiEtron",
+vehicle_type = ["Car", "Model3", "LincolnMKZ", "Rubicon", "Mercedes", "Harley", "Creta", "AudiEtron",
                 "OlaScooter", "OlaScooterLadder", "OlaScooterCylinder", "AshokTruck" ,"AshokTruckLoaded", "Ambulance",
                 "Auto", "IndianTaxi", "Bus"]
-pedestrian_type = ["Man1", "Woman1"]
+pedestrian_type = ["Man01"]
 static_type = ["Barrel", "ConcreteBarrier", "TrafficCone", "Newspaper", "Cow", "Cow2", "Cow3", "Doberman", "Terrier"]
 
 

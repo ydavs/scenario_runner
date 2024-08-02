@@ -767,6 +767,16 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
         actor_description.role_name = rolename
         actor_description.actor_category = actor_category
 
+        description = None
+        if actor_category == 'car':
+            description = limulator.VehicleDescription()
+            description.actor_description = actor_description
+        elif actor_category == 'pedestrian':
+            description = limulator.PedestrianDescription()
+            description.actor_description = actor_description
+        else:
+            description = actor_description
+
         # blueprint = CarlaDataProvider.create_blueprint(model, rolename, color, actor_category, attribute_filter)
 
         if random_location:
@@ -775,7 +785,9 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
                 # sp=list(CarlaDataProvider.get_map(CarlaDataProvider._world).get_spawn_points())
                 # spawn_point = CarlaDataProvider._rng.choice(sp)
                 spawn_point = CarlaDataProvider._rng.choice(CarlaDataProvider._spawn_points)
-                actor = CarlaDataProvider._world.try_spawn_actor(actor_description, spawn_point)
+                if actor_category == 'pedestrian':
+                    spawn_point.location.z = spawn_point.location.z + 1.5
+                actor = CarlaDataProvider._world.try_spawn_actor(description, spawn_point)
 
         else:
             # For non prop models, slightly lift the actor to avoid collisions with the ground
@@ -786,7 +798,9 @@ class CarlaDataProvider(object):  # pylint: disable=too-many-public-methods
             _spawn_point.location.x = spawn_point.location.x
             _spawn_point.location.y = spawn_point.location.y
             _spawn_point.location.z = spawn_point.location.z + z_offset
-            actor = CarlaDataProvider._world.try_spawn_actor(actor_description, _spawn_point)
+            if actor_category == 'pedestrian':
+                spawn_point.location.z = spawn_point.location.z + 1.5
+            actor = CarlaDataProvider._world.try_spawn_actor(description, _spawn_point)
 
         if actor is None:
             print("WARNING: Cannot spawn actor {} at position {}".format(model, spawn_point.location))
