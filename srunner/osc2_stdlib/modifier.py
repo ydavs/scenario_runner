@@ -90,6 +90,28 @@ class PositionModifier(Modifier):
 
     def get_trigger_point(self) -> str:
         return self.args.get("at", "all")
+class LateralModifier(Modifier):
+    def __init__(self, actor_name: str, name: str) -> None:
+        super().__init__(actor_name, name)
+
+    def get_distance(self):
+        dist = self.args["distance"]
+        if isinstance(dist, Physical):
+            return dist
+        else:
+            print(
+                "[Error] 'distance' parameter of LateralModifier must be 'Physical' type"
+            )
+            sys.exit(1)
+
+    def get_side(self):
+        if self.args.get("side"):
+            return self.args.get("side"), "side"
+        else:
+            print("PositionModifier key error")
+
+    def get_trigger_point(self) -> str:
+        return self.args.get("at", "all")
 class TurnModifier(Modifier):
     def __init__(self, actor_name: str, name: str) -> None:
         super().__init__(actor_name, name)

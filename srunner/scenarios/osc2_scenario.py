@@ -37,6 +37,7 @@ from srunner.osc2_stdlib.modifier import (
     SpeedModifier,
     CrossActionModifier,
     RoadActionModifier,
+    LateralModifier,
 )
 
 # OSC2
@@ -926,43 +927,24 @@ class OSC2Scenario(BasicScenario):
 
                         location_modifiers.append(modifier_ins)
                     
-                    # elif modifier_name == "take_turn":
-                    #     modifier_ins = TurnModifier(actor, modifier_name)
-                    #     keyword_args = {}
-                    #     if isinstance(arguments, list):
-                    #         arguments = OSC2Helper.flat_list(arguments)
-                    #         for arg in arguments:
-                    #             if isinstance(arg, tuple):
-                    #                 keyword_args[arg[0]] = arg[1]
-                    #     elif isinstance(arguments, tuple):
-                    #         keyword_args[arguments[0]] = arguments[1]
-                    #     else:
-                    #         raise NotImplementedError(
-                    #             f"no implentment argument of {modifier_name}"
-                    #         )
+                    elif modifier_name == "lateral":
+                        modifier_ins = LateralModifier(actor, modifier_name)
+                        keyword_args = {}
+                        if isinstance(arguments, list):
+                            arguments = OSC2Helper.flat_list(arguments)
+                            for arg in arguments:
+                                if isinstance(arg, tuple):
+                                    keyword_args[arg[0]] = arg[1]
+                        elif isinstance(arguments, tuple):
+                            keyword_args[arguments[0]] = arguments[1]
+                        else:
+                            raise NotImplementedError(
+                                f"no implentment argument of {modifier_name}"
+                            )
 
-                    #     modifier_ins.set_args(keyword_args)
+                        modifier_ins.set_args(keyword_args)
 
-                    #     action_modifiers.append(modifier_ins)
-                    
-                    # elif modifier_name == "wrong_side":
-                    #     modifier_ins = WrongSideModifier(actor, modifier_name)
-                    #     keyword_args = {}
-                    #     if isinstance(arguments, list):
-                    #         arguments = OSC2Helper.flat_list(arguments)
-                    #         for arg in arguments:
-                    #             if isinstance(arg, tuple):
-                    #                 keyword_args[arg[0]] = arg[1]
-                    #     elif isinstance(arguments, tuple):
-                    #         keyword_args[arguments[0]] = arguments[1]
-                    #     else:
-                    #         raise NotImplementedError(
-                    #             f"no implentment argument of {modifier_name}"
-                    #         )
-
-                    #     modifier_ins.set_args(keyword_args)
-
-                    #     action_modifiers.append(modifier_ins)
+                        location_modifiers.append(modifier_ins)
                     
                     elif modifier_name == "road_action":
                         modifier_ins = RoadActionModifier(actor, modifier_name)

@@ -34,11 +34,6 @@ modifier Path.set_map
 modifier Path.path_min_driving_lanes
 actor Model3
 actor Rubicon
-actor Carlacola
-actor Firetruck
-actor A2
-actor Ninja
-actor Crossbike
 actor Woman1
 actor Man1
 actor Barrel
@@ -46,20 +41,30 @@ actor Creta
 actor Mercedes
 actor OlaScooter
 actor OlaScooterCylinder
+actor Bus
+actor IndianTaxi
 
 #import basic.osc
 
+# tag::library-physical-angle[]
+type angle is SI(rad: 1)
+unit degree of angle is SI(rad: 1, factor: 57.295779513)
+unit deg    of angle is SI(rad: 1, factor: 57.295779513)
+unit radian of angle is SI(rad: 1, factor: 1)
+unit rad    of angle is SI(rad: 1, factor: 1)
+# end::library-physical-angle[]
+
 scenario top:
     path: Path                      # A path in the map
-    path.set_map("Junction_Map1")    # specify map to use in this test
+    path.set_map("junction_2")    # specify map to use in this test
     path.path_min_driving_lanes(3)
-    path.path_with_junction(junction_id:None,distance:50m)         # Path should have at least two lanes
+    path.path_with_junction(junction_id:1,distance:None)         # Path should have at least two lanes
 
-    npc: OlaScooterCylinder
-    npc2: OlaScooter
-    npc3: OlaScooter
-    npc4: OlaScooterCylinder                # ego car
-    ego_vehicle: AudiEtron               # The other car
+    npc: Rubicon
+    #npc2: OlaScooter
+    #npc3: OlaScooter
+    #npc4: OlaScooterCylinder                # ego car
+    ego_vehicle: Mercedes               # The other car
 
     event start
     event end
@@ -68,21 +73,13 @@ scenario top:
     do serial:
         spawn: parallel(duration:20s):
             ego_vehicle.drive(path) with:
-                speed(20kph)
-                lane(1, at: start)
+                speed(0.1kph)
+                #road_action(speed:20kph,turn:straight)
+                lane(4, at: start)
             npc.drive(path) with:
-                speed(21kph)
-                lane(right_of:ego_vehicle, at: start)
-                position(20m, ahead_of:ego_vehicle, at: start)
-            npc4.drive(path) with:
-                speed(20kph)
-                lane(same_as:ego_vehicle, at: start)
-                position(20m, ahead_of:ego_vehicle, at: start)   
-            npc2.drive(path) with:
-                speed(19kph)
-                lane(right_of:npc, at: start)
-                position(2m, behind:npc, at: start)
-            npc3.drive(path) with:
-                speed(22kph)
-                lane(right_of:npc2, at: start)
-                position(1m, ahead_of:npc2, at: start)
+                lane(right_of:ego_vehicle, at: start) # left to right: [1..n]
+                position(45m, ahead_of: ego_vehicle, at: start)
+                cross_action(speed: 10kph, angle: -30rad)
+                #road_action(speed:40kph,wrong_side:true)
+                orientation(yaw:-120rad, pitch:360.0rad, roll:0.0rad, relative_to:ego_vehicle, at: start)
+                

@@ -525,6 +525,10 @@ def main():
     GV.SEED = arguments.positionSeed
     # pylint: enable=line-too-long
     # OSC2Helper.wait_for_ego = arguments.waitForEgo
+    arguments.sync=False
+    arguments.openscenario2='srunner/examples/simdaas_test_junction.osc'
+    arguments.reloadWorld=False
+    arguments.output=True
     GV.LOGIC="gauss"
     #GV.MU=None
     #GV.SIGMA=None
