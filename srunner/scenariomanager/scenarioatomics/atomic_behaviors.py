@@ -2723,7 +2723,7 @@ class WaypointFollower(AtomicBehavior):
     """
 
     def __init__(self, actor, target_speed=None, plan=None, blackboard_queue_name=None,
-                 avoid_collision=False, name="FollowWaypoints", turn_modifier=None, wrong_side=None, cross_angle=None):
+                 avoid_collision=False, name="FollowWaypoints", turn_modifier=None, wrong_side=None, cross_angle=None, lateral_side=None, lateral_distance=None):
         """
         Set up actor and local planner
         """
@@ -2737,6 +2737,8 @@ class WaypointFollower(AtomicBehavior):
         self.turn_modifier=turn_modifier
         self._wrong_side=wrong_side
         self._cross_angle=cross_angle
+        self._lateral_side=lateral_side
+        self._lateral_distance=lateral_distance
         self._blackboard_queue_name = blackboard_queue_name
         if blackboard_queue_name is not None:
             self._queue = Blackboard().get(blackboard_queue_name)
@@ -2799,7 +2801,9 @@ class WaypointFollower(AtomicBehavior):
                     'max_throttle': 1.0,
                     'take_turn': self.turn_modifier,
                     'wrong_side':self._wrong_side,
-                    'cross_angle':self._cross_angle}
+                    'cross_angle':self._cross_angle,
+                    'lateral_side':self._lateral_side,
+                    'lateral_distance':self._lateral_distance}
             local_planner = LocalPlanner(  # pylint: disable=undefined-variable
                 actor, opt_dict )
 

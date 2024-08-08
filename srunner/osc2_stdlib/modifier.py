@@ -105,41 +105,24 @@ class LateralModifier(Modifier):
             sys.exit(1)
 
     def get_side(self):
-        if self.args.get("side"):
-            return self.args.get("side"), "side"
+        if"side" in self.args.keys():
+            side = self.args["side"]
+            if side=="left" or side=="right":
+                return side
+            else:
+                print(
+                    "[Error] 'side' parameter of PositionModifier must be 'Physical' type"
+                )
+                sys.exit(1)
         else:
-            print("PositionModifier key error")
-
-    def get_trigger_point(self) -> str:
-        return self.args.get("at", "all")
-class TurnModifier(Modifier):
-    def __init__(self, actor_name: str, name: str) -> None:
-        super().__init__(actor_name, name)
-
-    def get_side(self):
-        side = self.args["side"]
-        if side=="left" or side=="right" or side=="straight":
-            return side
+            return None
+    
+    def get_speed(self):
+        speed = self.args["speed"]
+        if isinstance(speed, Physical):
+            return Physical(speed.gen_single_value(), speed.unit)
         else:
-            print(
-                "[Error] 'side' parameter of PositionModifier must be 'Physical' type"
-            )
-            sys.exit(1)
-
-    def get_trigger_point(self) -> str:
-        return self.args.get("at", "all")
-class WrongSideModifier(Modifier):
-    def __init__(self, actor_name: str, name: str) -> None:
-        super().__init__(actor_name, name)
-
-    def get_status(self):
-        status = self.args["activate"]
-        if status==True or status==False:
-            return status
-        else:
-            print(
-                "[Error] 'status' parameter of PositionModifier must be Boolean type"
-            )
+            print("[Error] 'speed' parameter of SpeedModifier must be 'Physical' type")
             sys.exit(1)
 
     def get_trigger_point(self) -> str:

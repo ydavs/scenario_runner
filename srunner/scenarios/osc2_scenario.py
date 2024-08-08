@@ -263,6 +263,23 @@ def process_action_modifier(config, modifiers, father_tree):
             LOG_WARNING(
                 f"{npc_name} car will move on the wrong side of the road"
             )
+        if isinstance(modifier, LateralModifier):
+            lateral_side = modifier.get_side()
+            target_speed = modifier.get_speed().gen_physical_value()
+            lateral_distance=modifier.get_distance().gen_physical_value()
+            npc_name = modifier.get_actor_name()
+            actor = CarlaDataProvider.get_actor_by_name(npc_name)
+            continue_drive = WaypointFollower(actor, target_speed=target_speed, lateral_side=lateral_side, lateral_distance=lateral_distance)
+            father_tree.add_child(continue_drive)
+            car_config = config.get_car_config(npc_name)
+            car_config.set_arg({"lateral distance": lateral_distance})
+            LOG_WARNING(
+                f"{npc_name} car will be offset by {lateral_distance}m"
+            )
+            car_config.set_arg({"lateral side": lateral_side})
+            LOG_WARNING(
+                f"{npc_name} car will be offset towards {lateral_side}"
+            )
 
 def process_location_modifier(config, modifiers, duration: float, father_tree):
     # position([distance: ]<distance> | time: <time>, [ahead_of: <car> | behind: <car>], [at: <event>])
@@ -944,7 +961,7 @@ class OSC2Scenario(BasicScenario):
 
                         modifier_ins.set_args(keyword_args)
 
-                        location_modifiers.append(modifier_ins)
+                        action_modifiers.append(modifier_ins)
                     
                     elif modifier_name == "road_action":
                         modifier_ins = RoadActionModifier(actor, modifier_name)
