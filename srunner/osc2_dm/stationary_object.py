@@ -96,17 +96,17 @@ class Newspaper(Stationary):
 
 class Cow(Stationary):
     def __init__(self) -> None:
-        super().__init__("/Game/AssetLibrary/Static/Animals/Cow/SM_Cow")
+        super().__init__("/Game/AssetLibrary/Static/Animals/Cow/Textures/SM_Cow")
 
 
 class Cow2(Stationary):
     def __init__(self) -> None:
-        super().__init__("/Game/AssetLibrary/Static/Animals/Cow/SM_Cow2")
+        super().__init__("/Game/AssetLibrary/Static/Animals/Cow/Textures/SM_Cow2")
 
 
 class Cow3(Stationary):
     def __init__(self) -> None:
-        super().__init__("/Game/AssetLibrary/Static/Animals/Cow/SM_Cow3")
+        super().__init__("/Game/AssetLibrary/Static/Animals/Cow/Textures/SM_Cow3")
 
 
 class Doberman(Stationary):

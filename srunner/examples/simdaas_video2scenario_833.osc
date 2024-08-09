@@ -19,8 +19,8 @@ scenario top:
     npc3: Model3
     npc4: OlaScooter
     npc5: Model3
-    npc6: AudiEtron               # ego car
-    ego_vehicle: AudiEtron               # The other car
+    npc6: Mercedes               # ego car
+    ego_vehicle: Model3               # The other car
 
     event start
     event end
